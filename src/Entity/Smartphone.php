@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: SmartphoneRepository::class)]
@@ -18,95 +19,125 @@ class Smartphone
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
+    #[Groups('read:smartphone')]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('read:smartphone')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 2)]
+    #[Groups('read:smartphone')]
     private ?string $price = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?\DateTimeImmutable $startedAt = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?\DateTimeImmutable $endedAt = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('read:smartphone')]
     private ?string $technology = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('read:smartphone')]
     private ?string $operatingSystem = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $specificAbsorptionRateMember = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $specificAbsorptionRateTrunk = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $specificAbsorptionRateHead = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $weight = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $width = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $height = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $depth = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $sparePartsAvailibility = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $indexRepairibility = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $ecoRatingDurability = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $ecoRatingClimateRespect = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $ecoRatingRepairability = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $ecoRatingResourcesPreservation = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $ecoRatingRecyclability = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?bool $microSdSlotMemory = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $romMemory = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $callAutonomy = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $batteryAutonomy = null;
 
     #[ORM\OneToMany(mappedBy: 'smartphone', targetEntity: Picture::class, orphanRemoval: true)]
+    #[Groups('read:smartphone')]
     private Collection $pictures;
 
     #[ORM\ManyToOne(inversedBy: 'smartphones')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('read:smartphone')]
     private ?Range $range = null;
 
     #[ORM\ManyToMany(targetEntity: Camera::class, inversedBy: 'smartphones')]
+    #[Groups('read:smartphone')]
     private Collection $cameras;
 
     #[ORM\ManyToMany(targetEntity: Color::class, inversedBy: 'smartphones')]
+    #[Groups('read:smartphone')]
     private Collection $colors;
 
     #[ORM\ManyToOne(inversedBy: 'smartphones')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups('read:smartphone')]
     private ?Screen $screen = null;
 
     #[ORM\ManyToMany(targetEntity: Customer::class, mappedBy: 'smartphones')]

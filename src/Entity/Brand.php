@@ -6,6 +6,7 @@ use App\Repository\BrandRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: BrandRepository::class)]
@@ -17,9 +18,11 @@ class Brand
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
+    #[Groups('read:smartphone')]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('read:smartphone')]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'brand', targetEntity: Range::class, orphanRemoval: true)]
@@ -34,6 +37,7 @@ class Brand
     {
         return $this->id;
     }
+
 
     public function getUuid(): ?Uuid
     {

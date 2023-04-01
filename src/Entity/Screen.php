@@ -6,6 +6,7 @@ use App\Repository\ScreenRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: ScreenRepository::class)]
@@ -17,15 +18,19 @@ class Screen
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
+    #[Groups('read:smartphone')]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('read:smartphone')]
     private ?string $resolutionMainScreen = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $diagonal = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?bool $touchScreen = null;
 
     #[ORM\OneToMany(mappedBy: 'screen', targetEntity: Smartphone::class)]

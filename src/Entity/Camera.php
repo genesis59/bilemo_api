@@ -6,6 +6,7 @@ use App\Repository\CameraRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: CameraRepository::class)]
@@ -17,24 +18,31 @@ class Camera
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
+    #[Groups('read:smartphone')]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('read:smartphone')]
     private ?string $name = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $numericZoom = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?int $resolution = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?bool $numericZoomBack = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?bool $flash = null;
 
     #[ORM\Column]
+    #[Groups('read:smartphone')]
     private ?bool $flashBack = null;
 
     #[ORM\ManyToMany(targetEntity: Smartphone::class, mappedBy: 'cameras')]

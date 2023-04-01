@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\PictureRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: PictureRepository::class)]
@@ -15,9 +16,11 @@ class Picture
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
+    #[Groups('read:smartphone')]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('read:smartphone')]
     private ?string $fileName = null;
 
     #[ORM\ManyToOne(inversedBy: 'pictures')]
