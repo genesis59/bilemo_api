@@ -52,9 +52,13 @@ class Customer
     #[ORM\ManyToMany(targetEntity: Reseller::class, inversedBy: 'customers')]
     private Collection $resellers;
 
+    #[ORM\ManyToMany(targetEntity: Smartphone::class, inversedBy: 'customers')]
+    private Collection $smartphones;
+
     public function __construct()
     {
         $this->resellers = new ArrayCollection();
+        $this->smartphones = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -214,6 +218,30 @@ class Customer
     public function removeReseller(Reseller $reseller): self
     {
         $this->resellers->removeElement($reseller);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Smartphone>
+     */
+    public function getSmartphones(): Collection
+    {
+        return $this->smartphones;
+    }
+
+    public function addSmartphone(Smartphone $smartphone): self
+    {
+        if (!$this->smartphones->contains($smartphone)) {
+            $this->smartphones->add($smartphone);
+        }
+
+        return $this;
+    }
+
+    public function removeSmartphone(Smartphone $smartphone): self
+    {
+        $this->smartphones->removeElement($smartphone);
 
         return $this;
     }

@@ -109,11 +109,15 @@ class Smartphone
     #[ORM\JoinColumn(nullable: false)]
     private ?Screen $screen = null;
 
+    #[ORM\ManyToMany(targetEntity: Customer::class, mappedBy: 'smartphones')]
+    private Collection $customers;
+
     public function __construct()
     {
         $this->pictures = new ArrayCollection();
         $this->cameras = new ArrayCollection();
         $this->colors = new ArrayCollection();
+        $this->customers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -519,6 +523,33 @@ class Smartphone
     public function setScreen(?Screen $screen): self
     {
         $this->screen = $screen;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Customer>
+     */
+    public function getCustomers(): Collection
+    {
+        return $this->customers;
+    }
+
+    public function addCustomer(Customer $customer): self
+    {
+        if (!$this->customers->contains($customer)) {
+            $this->customers->add($customer);
+            $customer->addSmartphone($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomer(Customer $customer): self
+    {
+        if ($this->customers->removeElement($customer)) {
+            $customer->removeSmartphone($this);
+        }
 
         return $this;
     }
