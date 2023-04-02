@@ -6,6 +6,7 @@ use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
@@ -14,42 +15,55 @@ class Customer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read:customer'])]
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
+    #[Groups(['read:customer'])]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read:customer'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read:customer'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read:customer'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read:customer'])]
     private ?string $phoneNumber = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read:customer'])]
     private ?string $street = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read:customer'])]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read:customer'])]
     private ?string $country = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read:customer'])]
     private ?string $postCode = null;
 
     #[ORM\Column]
+    #[Groups(['read:customer'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['read:customer'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToMany(targetEntity: Reseller::class, inversedBy: 'customers')]
+    #[Groups(['read:customer'])]
     private Collection $resellers;
 
     #[ORM\ManyToMany(targetEntity: Smartphone::class, inversedBy: 'customers')]

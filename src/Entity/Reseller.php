@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: ResellerRepository::class)]
@@ -19,6 +20,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['read:customer'])]
     private ?string $email = null;
 
     /**
@@ -34,9 +36,11 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(type: 'uuid')]
+    #[Groups(['read:customer'])]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read:customer'])]
     private ?string $company = null;
 
     #[ORM\Column]
