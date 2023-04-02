@@ -10,8 +10,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CustomerGetOneController extends AbstractController
 {
-    #[Route('/api/customers/{id}', name: 'app_get_customer')]
-    public function index(Customer $customer): JsonResponse
+    #[Route('/api/customers/{id}', name: 'app_get_customer', methods: ['GET'])]
+    public function __invoke(Customer $customer): JsonResponse
     {
         return $this->json($customer, Response::HTTP_OK, [], ['groups' => 'read:customer']);
     }

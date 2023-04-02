@@ -10,8 +10,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CustomerGetAllController extends AbstractController
 {
-    #[Route('/api/customers', name: 'app_get_customers')]
-    public function index(CustomerRepository $customerRepository): JsonResponse
+    #[Route('/api/customers', name: 'app_get_customers', methods: ['GET'])]
+    public function __invoke(CustomerRepository $customerRepository): JsonResponse
     {
         $customers = $customerRepository->findAll();
         return $this->json($customers, Response::HTTP_OK, [], ['groups' => 'read:customer']);
