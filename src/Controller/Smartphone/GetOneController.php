@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class SmartphoneGetOneController extends AbstractController
+class GetOneController extends AbstractController
 {
     #[Route('/api/smartphones/{id}', name: 'app_get_smartphone', methods: ['GET'])]
     public function __invoke(Smartphone $smartphone): JsonResponse

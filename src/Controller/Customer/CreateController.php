@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Uid\Uuid;
 
-class CustomerCreateController extends AbstractController
+class CreateController extends AbstractController
 {
     #[Route('/api/customers', name: 'app_create_customer', methods: ['POST'])]
     public function __invoke(

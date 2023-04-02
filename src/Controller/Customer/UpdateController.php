@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class CustomerUpdateController extends AbstractController
+class UpdateController extends AbstractController
 {
     #[Route('/api/customers/{id}', name: 'app_update_customer', methods: ['PUT'])]
     public function __invoke(
