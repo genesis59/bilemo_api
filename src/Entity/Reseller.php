@@ -20,12 +20,14 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['read:reseller'])]
     private ?string $email = null;
 
     /**
      * @var array<string>
      */
     #[ORM\Column]
+    #[Groups(['read:reseller'])]
     private array $roles = [];
 
     /**
@@ -35,12 +37,15 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(type: 'uuid')]
+    #[Groups(['read:reseller'])]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['read:reseller'])]
     private ?string $company = null;
 
     #[ORM\Column]
+    #[Groups(['read:reseller'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\ManyToMany(targetEntity: Customer::class, mappedBy: 'resellers')]
