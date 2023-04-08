@@ -76,7 +76,7 @@ final class SmartphoneFactory extends ModelFactory
             'microSdSlotMemory' => self::faker()->boolean(),
             'name' => self::faker()->name(),
             'operatingSystem' => self::faker()->userAgent(),
-            'price' => self::faker()->randomFloat(7, 50, 3000),
+            'price' => self::faker()->randomFloat(7, 1000, 3000),
             'range' => RangeFactory::random(),
             'romMemory' => self::faker()->randomNumber(2),
             'screen' => ScreenFactory::random(),

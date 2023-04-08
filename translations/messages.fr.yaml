@@ -1,0 +1,54 @@
+app:
+  constraint:
+    customer:
+      first_name:
+        regex: Les caractères spéciaux ne sont pas autorisés.
+        not_blank: Le champ firstName ne peut être vide.
+        length_min_message: Le champ firstName est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ firstName est trop court. Il doit avoir au minimum {{ limit }} caractères.
+        length_max_message: Le champ firstName est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ firstName est trop long. IL doit avoir au maximum {{ limit }} caractères.
+      last_name:
+        regex: Les caractères spéciaux ne sont pas autorisés.
+        not_blank: Le champ lastName ne peut être vide.
+        length_min_message: Le champ lastName est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ lastName est trop court. Il doit avoir au minimum {{ limit }} caractères.
+        length_max_message: Le champ lastName est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ lastName est trop long. IL doit avoir au maximum {{ limit }} caractères.
+      email:
+        email: Cette valeur {{ value }} n'est pas un email valide.
+        not_blank: Le champ email ne peut être vide.
+        length_max_message: Le champ email est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ email est trop long. IL doit avoir au maximum {{ limit }} caractères.
+        unique: Cette email existe déjà.
+      phone_number:
+        not_blank: Le champ phoneNumber ne peut être vide.
+        length_min_message: Le champ phoneNumber est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ phoneNumber est trop court. Il doit avoir au minimum {{ limit }} caractères.
+        length_max_message: Le champ phoneNumber est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ phoneNumber est trop long. IL doit avoir au maximum {{ limit }} caractères.
+      street:
+        regex: Les caractères spéciaux ne sont pas autorisés hormis la virgule.
+        not_blank: Le champ street ne peut être vide.
+        length_min_message: Le champ street est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ street est trop court. Il doit avoir au minimum {{ limit }} caractères.
+        length_max_message: Le champ street est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ street est trop long. IL doit avoir au maximum {{ limit }} caractères.
+      city:
+        regex: Les caractères spéciaux ne sont pas autorisés.
+        not_blank: Le champ city ne peut être vide.
+        length_min_message: Le champ city est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ city est trop court. Il doit avoir au minimum {{ limit }} caractères.
+        length_max_message: Le champ city est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ city est trop long. IL doit avoir au maximum {{ limit }} caractères.
+      country:
+        regex: Les caractères spéciaux ne sont pas autorisés.
+        not_blank: Le champ country ne peut être vide.
+        length_min_message: Le champ country est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ country est trop court. Il doit avoir au minimum {{ limit }} caractères.
+        length_max_message: Le champ country est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ country est trop long. IL doit avoir au maximum {{ limit }} caractères.
+      postcode:
+        regex: Les caractères spéciaux et accentués ne sont pas autorisés.
+        not_blank: Le champ postcode ne peut être vide.
+        length_min_message: Le champ postcode est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ postcode est trop court. Il doit avoir au minimum {{ limit }} caractères.
+        length_max_message: Le champ postcode est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ postcode est trop long. IL doit avoir au maximum {{ limit }} caractères.
+    reseller:
+      password:
+        not_compromised_password: Ce mot de passe a été divulgué lors d'une fuite de données, il ne doit plus être utilisé. Veuillez utiliser un autre mot de passe.
+        regex: Le mot de passe n'est pas valide. Il doit comporter au moins 8 caractères dont 1 minuscule, 1 majuscule, 1 chiffre et 1 caractère spécial (-.,?;:§+!*$@%_).
+      email:
+        email: Cette valeur {{ value }} n'est pas un email valide.
+        not_blank: Le champ email ne peut être vide.
+        length_max_message: Le champ email est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ email est trop long. IL doit avoir au maximum {{ limit }} caractères.
+        unique: Cette email existe déjà.
+      company:
+        unique: Cette entreprise existe déjà.
+        length_max_message: Le champ company est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ company est trop long. IL doit avoir au maximum {{ limit }} caractères.
