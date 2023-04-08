@@ -16,7 +16,6 @@ class Smartphone
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups('read:smartphone')]
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]

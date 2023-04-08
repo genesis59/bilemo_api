@@ -18,7 +18,6 @@ class Customer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read:customer'])]
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
