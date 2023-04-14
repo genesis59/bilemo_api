@@ -6,12 +6,16 @@ use App\Repository\ResellerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: ResellerRepository::class)]
+#[UniqueEntity(fields: ['email'], message: 'app.constraint.reseller.email.unique')]
+#[UniqueEntity(fields: ['company'], message: 'app.constraint.reseller.company.unique')]
 class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -20,6 +24,9 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: 'app.constraint.reseller.email.not_blank')]
+    #[Assert\Email(message: 'app.constraint.reseller.email.email')]
+    #[Assert\Length(max:255, maxMessage: 'app.constraint.reseller.email.length_max_message')]
     #[Groups(['read:reseller'])]
     private ?string $email = null;
 
@@ -34,6 +41,11 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotCompromisedPassword(message: 'app.constraint.reseller.password.not_compromised_password')]
+    #[Assert\Regex(
+        pattern: '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-.,?;:§+!*$@%_])([-.,?;:§+!*$@%_\w]{8,})$/',
+        message: 'app.constraint.reseller.password.regex'
+    )]
     private ?string $password = null;
 
     #[ORM\Column(type: 'uuid')]
@@ -42,6 +54,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     #[Groups(['read:reseller'])]
+    #[Assert\Length(max:255, maxMessage: 'app.constraint.reseller.company.length_max_message')]
     private ?string $company = null;
 
     #[ORM\Column]
@@ -62,11 +75,6 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function getUserName(): ?string
     {
         return $this->email;
     }

@@ -47,16 +47,13 @@ use Zenstruck\Foundry\RepositoryProxy;
  */
 final class ResellerFactory extends ModelFactory
 {
-    private UserPasswordHasherInterface $passwordHasher;
-
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
      *
      */
-    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    public function __construct()
     {
         parent::__construct();
-        $this->passwordHasher = $passwordHasher;
     }
 
     /**
@@ -67,11 +64,8 @@ final class ResellerFactory extends ModelFactory
     {
         return [
             'company' => self::faker()->company(),
-            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'email' => self::faker()->companyEmail(),
             'password' => 'password',
-            'roles' => ['ROLE_USER'],
-            'uuid' => Uuid::v4()
         ];
     }
 
@@ -81,9 +75,7 @@ final class ResellerFactory extends ModelFactory
     protected function initialize(): self
     {
         return $this
-            ->afterInstantiate(function (Reseller $reseller): void {
-                $reseller->setPassword($this->passwordHasher->hashPassword($reseller, $reseller->getPassword()));
-            })
+            // ->afterInstantiate(function (Reseller $reseller): void {})
         ;
     }
 

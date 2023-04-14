@@ -70,8 +70,7 @@ final class CustomerFactory extends ModelFactory
             'lastName' => self::faker()->lastName(),
             'phoneNumber' => self::faker()->phoneNumber(),
             'postCode' => self::faker()->postcode(),
-            'street' => self::faker()->streetName(),
-            'uuid' => Uuid::v4()
+            'street' => self::faker()->streetName()
         ];
     }
 

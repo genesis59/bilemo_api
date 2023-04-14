@@ -6,16 +6,18 @@ use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
+#[UniqueEntity(fields: ['email'], message: 'app.constraint.customer.email.unique')]
 class Customer
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['read:customer'])]
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
@@ -24,34 +26,98 @@ class Customer
 
     #[ORM\Column(length: 255)]
     #[Groups(['read:customer'])]
+    #[Assert\NotBlank(message: 'app.constraint.customer.first_name.not_blank')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]+$/i',
+        message: 'app.constraint.customer.first_name.regex'
+    )]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['read:customer'])]
+    #[Assert\NotBlank(message: 'app.constraint.customer.last_name.not_blank')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]+$/i',
+        message: 'app.constraint.customer.last_name.regex'
+    )]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'app.constraint.customer.email.not_blank')]
+    #[Assert\Email(message: 'app.constraint.customer.email.email')]
+    #[Assert\Length(max:255, maxMessage: 'app.constraint.customer.email.length_max_message')]
     #[Groups(['read:customer'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['read:customer'])]
+    #[Assert\NotBlank(message: 'app.constraint.customer.phone_number.not_blank')]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: 'app.constraint.customer.phone_number.length_min_message',
+        maxMessage: 'app.constraint.customer.phone_number.length_max_message'
+    )]
     private ?string $phoneNumber = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['read:customer'])]
+    #[Assert\NotBlank(message: 'app.constraint.customer.street.not_blank')]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'app.constraint.customer.street.length_min_message',
+        maxMessage: 'app.constraint.customer.street.length_max_message'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ,\s]+$/i',
+        message: 'app.constraint.customer.last_name.regex'
+    )]
     private ?string $street = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['read:customer'])]
+    #[Assert\NotBlank(message: 'app.constraint.customer.city.not_blank')]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: 'app.constraint.customer.city.length_min_message',
+        maxMessage: 'app.constraint.customer.city.length_max_message'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s]+$/i',
+        message: 'app.constraint.customer.last_name.regex'
+    )]
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['read:customer'])]
+    #[Assert\NotBlank(message: 'app.constraint.customer.country.not_blank')]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: 'app.constraint.customer.country.length_min_message',
+        maxMessage: 'app.constraint.customer.country.length_max_message'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s]+$/i',
+        message: 'app.constraint.customer.last_name.regex'
+    )]
     private ?string $country = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['read:customer'])]
+    #[Assert\NotBlank(message: 'app.constraint.customer.postcode.not_blank')]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: 'app.constraint.customer.postcode.length_min_message',
+        maxMessage: 'app.constraint.customer.postcode.length_max_message'
+    )]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z0-9-]+$/i',
+        message: 'app.constraint.customer.last_name.regex'
+    )]
     private ?string $postCode = null;
 
     #[ORM\Column]
