@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class GetAllController extends AbstractController
+class CustomerGetAllController extends AbstractController
 {
     #[Route('/api/customers', name: 'app_get_customers', methods: ['GET'])]
     public function __invoke(CustomerRepository $customerRepository): JsonResponse

@@ -1,4 +1,9 @@
 app:
+  exception:
+    not_encodable_value_exception: Le body ne doit pas être vide
+    not_found_http_exception: Aucune ressource trouvée à cette adresse
+    entity_not_found_exception: La ressource possedademandée n'existe pas, uuid erroné
+    internal_server_error: Une erreur interne est survenue. Veuillez réessayer plus tard ou contacter le support si le problème persiste.
   constraint:
     customer:
       first_name:
@@ -21,17 +26,17 @@ app:
         length_min_message: Le champ phoneNumber est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ phoneNumber est trop court. Il doit avoir au minimum {{ limit }} caractères.
         length_max_message: Le champ phoneNumber est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ phoneNumber est trop long. IL doit avoir au maximum {{ limit }} caractères.
       street:
-        regex: Les caractères spéciaux ne sont pas autorisés hormis la virgule.
+        regex: Le champ ne doit contenir que des lettres, des chiffres, des virgules et des espaces.
         not_blank: Le champ street ne peut être vide.
         length_min_message: Le champ street est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ street est trop court. Il doit avoir au minimum {{ limit }} caractères.
         length_max_message: Le champ street est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ street est trop long. IL doit avoir au maximum {{ limit }} caractères.
       city:
-        regex: Les caractères spéciaux ne sont pas autorisés.
+        regex: Le champ ne doit contenir que des lettres, des chiffres et des espaces.
         not_blank: Le champ city ne peut être vide.
         length_min_message: Le champ city est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ city est trop court. Il doit avoir au minimum {{ limit }} caractères.
         length_max_message: Le champ city est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ city est trop long. IL doit avoir au maximum {{ limit }} caractères.
       country:
-        regex: Les caractères spéciaux ne sont pas autorisés.
+        regex: Le champ ne doit contenir que des lettres, des chiffres et des espaces.
         not_blank: Le champ country ne peut être vide.
         length_min_message: Le champ country est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ country est trop court. Il doit avoir au minimum {{ limit }} caractères.
         length_max_message: Le champ country est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ country est trop long. IL doit avoir au maximum {{ limit }} caractères.

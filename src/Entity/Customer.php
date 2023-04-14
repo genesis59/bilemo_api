@@ -70,7 +70,7 @@ class Customer
         maxMessage: 'app.constraint.customer.street.length_max_message'
     )]
     #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ,]+$/i',
+        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ,\s]+$/i',
         message: 'app.constraint.customer.last_name.regex'
     )]
     private ?string $street = null;
@@ -85,7 +85,7 @@ class Customer
         maxMessage: 'app.constraint.customer.city.length_max_message'
     )]
     #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]+$/i',
+        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s]+$/i',
         message: 'app.constraint.customer.last_name.regex'
     )]
     private ?string $city = null;
@@ -100,7 +100,7 @@ class Customer
         maxMessage: 'app.constraint.customer.country.length_max_message'
     )]
     #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]+$/i',
+        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s]+$/i',
         message: 'app.constraint.customer.last_name.regex'
     )]
     private ?string $country = null;

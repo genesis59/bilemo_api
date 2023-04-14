@@ -7,16 +7,19 @@ use App\Entity\Reseller;
 use App\Repository\CustomerRepository;
 use App\Repository\ResellerRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-class CreateController extends AbstractController
+class CustomerCreateController extends AbstractController
 {
     #[Route('/api/customers', name: 'app_create_customer', methods: ['POST'])]
     public function __invoke(
@@ -24,11 +27,16 @@ class CreateController extends AbstractController
         SerializerInterface $serializer,
         ResellerRepository $resellerRepository,
         CustomerRepository $customerRepository,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        TranslatorInterface $translator
     ): JsonResponse {
 
+        if ($request->getContent() === "") {
+            throw new NotEncodableValueException();
+        }
         /** @var Reseller $reseller */
         $reseller = $this->getUser();
+
         /** @var Customer $customer */
         $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json');
         $customer->addReseller($reseller);
@@ -36,7 +44,12 @@ class CreateController extends AbstractController
         $customer->setUuid(Uuid::v4());
         $errors = $validator->validate($customer);
         if ($errors->count() > 0) {
-            throw new BadRequestException();
+            $jsonErrors = [];
+            /** @var ConstraintViolationInterface $error */
+            foreach ($errors as $error) {
+                $jsonErrors[$error->getPropertyPath()] = $translator->trans($error->getMessageTemplate());
+            }
+            throw new UnprocessableEntityHttpException('My custom error message', null, 0, ['errors' => $jsonErrors]);
         }
         $customerRepository->save($customer, true);
 
