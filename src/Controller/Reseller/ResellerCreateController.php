@@ -13,14 +13,13 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ResellerCreateController extends AbstractController
 {
-    #[Route('/api/auth/signup', name: 'app_create_reseller', methods: ['POST'])]
+    #[Route('/api/resellers', name: 'app_create_reseller', methods: ['POST'])]
     public function __invoke(
         Request $request,
         SerializerInterface $serializer,
@@ -35,10 +34,6 @@ class ResellerCreateController extends AbstractController
         }
         /** @var Reseller $reseller */
         $reseller = $serializer->deserialize($request->getContent(), Reseller::class, 'json');
-        $reseller->setCreatedAt(new \DateTimeImmutable());
-        $reseller->setRoles(['ROLE_USER']);
-        $reseller->setPassword($passwordHasher->hashPassword($reseller, $reseller->getPassword()));
-        $reseller->setUuid(Uuid::v4());
         $errors = $validator->validate($reseller);
         if ($errors->count() > 0) {
             $jsonErrors = [];

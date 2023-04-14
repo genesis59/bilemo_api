@@ -5,6 +5,7 @@ namespace App\Controller\Customer;
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,7 +28,8 @@ class CustomerUpdateController extends AbstractController
         CustomerRepository $customerRepository,
         string $idCustomer,
         ValidatorInterface $validator,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        ManagerRegistry $managerRegistry
     ): JsonResponse {
 
         $customer = $customerRepository->find($idCustomer);
@@ -54,7 +56,7 @@ class CustomerUpdateController extends AbstractController
             }
             throw new UnprocessableEntityHttpException('', null, 0, ['errors' => $jsonErrors]);
         }
-        $updateCustomer->setUpdatedAt(new \DateTimeImmutable());
+        $managerRegistry->getManager()->flush();
         return $this->json($updateCustomer, Response::HTTP_OK, [], ['groups' => 'read:customer']);
     }
 }

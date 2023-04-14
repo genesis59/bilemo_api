@@ -34,14 +34,9 @@ class CustomerCreateController extends AbstractController
         if ($request->getContent() === "") {
             throw new NotEncodableValueException();
         }
-        /** @var Reseller $reseller */
-        $reseller = $this->getUser();
-
         /** @var Customer $customer */
         $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json');
-        $customer->addReseller($reseller);
-        $customer->setCreatedAt(new \DateTimeImmutable());
-        $customer->setUuid(Uuid::v4());
+
         $errors = $validator->validate($customer);
         if ($errors->count() > 0) {
             $jsonErrors = [];
