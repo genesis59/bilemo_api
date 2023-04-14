@@ -15,24 +15,28 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CustomerUpdateController extends AbstractController
 {
-    #[Route('/api/customers/{idCustomer}', name: 'app_update_customer', methods: ['PUT'])]
+    #[Route('/api/customers/{uuid}', name: 'app_update_customer', methods: ['PUT'])]
     public function __invoke(
         Request $request,
         SerializerInterface $serializer,
         CustomerRepository $customerRepository,
-        string $idCustomer,
+        string $uuid,
         ValidatorInterface $validator,
         TranslatorInterface $translator,
         ManagerRegistry $managerRegistry
     ): JsonResponse {
 
-        $customer = $customerRepository->find($idCustomer);
+        if (!Uuid::isValid($uuid)) {
+            throw new EntityNotFoundException();
+        }
+        $customer = $customerRepository->findOneBy(['uuid' => $uuid]);
         if (!$customer) {
             throw new EntityNotFoundException();
         }

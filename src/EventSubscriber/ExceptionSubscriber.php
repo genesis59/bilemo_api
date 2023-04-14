@@ -48,7 +48,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         if ($exception instanceof NotEncodableValueException) {
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([
-                    'message' => $this->translator->trans('app.exception.not_encodable_value_exception')
+                    'message' => $exception->getMessage()
                 ], 'json'),
                 Response::HTTP_BAD_REQUEST,
                 [],
@@ -59,7 +59,9 @@ class ExceptionSubscriber implements EventSubscriberInterface
         if ($exception instanceof NotFoundHttpException) {
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([
-                    'message' => $this->translator->trans('app.exception.not_found_http_exception')
+                    'message' => array_key_exists('page', $exception->getHeaders()) ?
+                        $exception->getMessage() :
+                        $this->translator->trans('app.exception.not_found_http_exception')
                 ], 'json'),
                 Response::HTTP_NOT_FOUND,
                 [],

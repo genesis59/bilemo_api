@@ -64,12 +64,13 @@ final class CustomerFactory extends ModelFactory
         return [
             'city' => self::faker()->city(),
             'country' => self::faker()->country(),
+            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'email' => self::faker()->email(),
             'firstName' => self::faker()->firstName(),
             'lastName' => self::faker()->lastName(),
             'phoneNumber' => self::faker()->phoneNumber(),
             'postCode' => self::faker()->postcode(),
-            'street' => self::faker()->streetName(),
+            'street' => self::faker()->streetName()
         ];
     }
 

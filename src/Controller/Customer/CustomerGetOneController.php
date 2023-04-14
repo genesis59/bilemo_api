@@ -8,16 +8,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
 
 class CustomerGetOneController extends AbstractController
 {
     /**
      * @throws EntityNotFoundException
      */
-    #[Route('/api/customers/{idCustomer}', name: 'app_get_customer', methods: ['GET'])]
-    public function __invoke(string $idCustomer, CustomerRepository $customerRepository): JsonResponse
+    #[Route('/api/customers/{uuid}', name: 'app_get_customer', methods: ['GET'])]
+    public function __invoke(string $uuid, CustomerRepository $customerRepository): JsonResponse
     {
-        $customer = $customerRepository->find($idCustomer);
+        if (!Uuid::isValid($uuid)) {
+            throw new EntityNotFoundException();
+        }
+        $customer = $customerRepository->findOneBy(['uuid' => $uuid]);
         if (!$customer) {
             throw new EntityNotFoundException();
         }

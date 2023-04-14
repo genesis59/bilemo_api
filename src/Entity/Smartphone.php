@@ -38,6 +38,10 @@ class Smartphone
     #[Groups('read:smartphone')]
     private ?\DateTimeImmutable $endedAt = null;
 
+    #[ORM\Column]
+    #[Groups('read:smartphone')]
+    private ?\DateTimeImmutable $createdAt = null;
+
     #[ORM\Column(length: 255)]
     #[Groups('read:smartphone')]
     private ?string $technology = null;
@@ -214,6 +218,22 @@ class Smartphone
         $this->endedAt = $endedAt;
 
         return $this;
+    }
+
+    /**
+     * @return \DateTimeImmutable|null
+     */
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param \DateTimeImmutable|null $createdAt
+     */
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): void
+    {
+        $this->createdAt = $createdAt;
     }
 
     public function getTechnology(): ?string

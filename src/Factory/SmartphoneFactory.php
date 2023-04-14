@@ -71,6 +71,7 @@ final class SmartphoneFactory extends ModelFactory
             'ecoRatingRepairability' => self::faker()->randomNumber(2),
             'ecoRatingResourcesPreservation' => self::faker()->randomNumber(2),
             'endedAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'height' => self::faker()->randomNumber(2),
             'indexRepairibility' => self::faker()->randomNumber(2),
             'microSdSlotMemory' => self::faker()->boolean(),
