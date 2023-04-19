@@ -21,9 +21,12 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         api:
+            entry_point: jwt
             pattern: ^/api
             stateless: true
             jwt: ~
+            refresh_jwt:
+                check_path: /api/token/refresh # or, you may use the `api_refresh_token` route name
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
@@ -42,6 +45,7 @@ security:
     access_control:
         - { path: ^/api/auth/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/auth/signup, roles: PUBLIC_ACCESS }
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
