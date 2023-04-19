@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Uid\Uuid;
 
@@ -21,12 +22,13 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Ignore]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank(message: 'app.constraint.reseller.email.not_blank')]
     #[Assert\Email(message: 'app.constraint.reseller.email.email')]
-    #[Assert\Length(max:255, maxMessage: 'app.constraint.reseller.email.length_max_message')]
+    #[Assert\Length(max:180, maxMessage: 'app.constraint.reseller.email.length_max_message')]
     #[Groups(['read:reseller'])]
     private ?string $email = null;
 
@@ -43,7 +45,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     #[Assert\NotCompromisedPassword(message: 'app.constraint.reseller.password.not_compromised_password')]
     #[Assert\Regex(
-        pattern: '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-.,?;:§+!*$@%_])([-.,?;:§+!*$@%_\w]{8,})$/',
+        pattern: '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-.,?;:§+!*$@%_])([-.,?;:§+!*$@%_\w]{8,255})$/',
         message: 'app.constraint.reseller.password.regex'
     )]
     private ?string $password = null;
