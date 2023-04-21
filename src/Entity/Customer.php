@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -18,6 +19,7 @@ class Customer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Ignore]
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
@@ -27,6 +29,12 @@ class Customer
     #[ORM\Column(length: 255)]
     #[Groups(['read:customer'])]
     #[Assert\NotBlank(message: 'app.constraint.customer.first_name.not_blank')]
+    #[Assert\Length(
+        min:1,
+        max:255,
+        minMessage:'app.constraint.customer.first_name.length_min_message',
+        maxMessage: 'app.constraint.customer.first_name.length_max_message'
+    )]
     #[Assert\Regex(
         pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]+$/i',
         message: 'app.constraint.customer.first_name.regex'
@@ -36,6 +44,12 @@ class Customer
     #[ORM\Column(length: 255)]
     #[Groups(['read:customer'])]
     #[Assert\NotBlank(message: 'app.constraint.customer.last_name.not_blank')]
+    #[Assert\Length(
+        min: 1,
+        max:255,
+        minMessage: 'app.constraint.customer.last_name.length_min_message',
+        maxMessage: 'app.constraint.customer.last_name.length_max_message'
+    )]
     #[Assert\Regex(
         pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]+$/i',
         message: 'app.constraint.customer.last_name.regex'

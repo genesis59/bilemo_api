@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,7 +20,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ResellerCreateController extends AbstractController
 {
-    #[Route('/api/resellers', name: 'app_create_reseller', methods: ['POST'])]
+    #[Route('/api/auth/signup', name: 'app_create_reseller', methods: ['POST'])]
     public function __invoke(
         Request $request,
         SerializerInterface $serializer,
@@ -30,7 +31,7 @@ class ResellerCreateController extends AbstractController
     ): JsonResponse {
 
         if ($request->getContent() === "") {
-            throw new NotEncodableValueException();
+            throw new BadRequestHttpException();
         }
         /** @var Reseller $reseller */
         $reseller = $serializer->deserialize($request->getContent(), Reseller::class, 'json');
