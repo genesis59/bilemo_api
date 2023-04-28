@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\ConstraintViolationInterface;
@@ -49,7 +50,10 @@ class CustomerUpdateController extends AbstractController
             $request->getContent(),
             Customer::class,
             'json',
-            [AbstractNormalizer::OBJECT_TO_POPULATE => $customer]
+            [
+                AbstractNormalizer::OBJECT_TO_POPULATE => $customer,
+                DenormalizerInterface::COLLECT_DENORMALIZATION_ERRORS => true
+            ]
         );
         $errors = $validator->validate($updateCustomer);
         if ($errors->count() > 0) {

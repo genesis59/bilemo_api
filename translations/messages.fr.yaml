@@ -1,8 +1,12 @@
 app:
   exception:
+    not_normalizable_value_exception: Le type de cet attribut doit être du type %type%, %value% renseignée
+    not_null_constraint_violation_exception: Ce champ est obligatoire et doit être du type %type%, null donnée.
+    method_not_allowed_http_exception: "La méthode %method% n'est pas autorisée pour la route %uri% (Autorisée(s): %allows%)."
+    not_encodable_value_exception: Les données renseignées comportent une erreur de syntaxe.
     bad_request_http_exception: Le body ne doit pas être vide
     bad_request_login_miss_password: La clé password doit être fournie
-    bad_request_login_miss_username: La clé username doit être fournie
+    bad_request_login_miss_username: La clé email doit être fournie
     bad_content_type: Le Content-Type fourni est incorrect. Veuillez fournir un Content-Type au format json.
     not_found_http_exception: Cette url n'existe pas
     not_found_http_exception_page: Cette page n'existe pas
@@ -21,7 +25,7 @@ app:
         length_min_message: Le champ lastName est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ lastName est trop court. Il doit avoir au minimum {{ limit }} caractères.
         length_max_message: Le champ lastName est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ lastName est trop long. IL doit avoir au maximum {{ limit }} caractères.
       email:
-        email: Cette valeur {{ value }} n'est pas un email valide.
+        email: Cette valeur n'est pas un email valide.
         not_blank: Le champ email ne peut être vide.
         length_max_message: Le champ email est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ email est trop long. IL doit avoir au maximum {{ limit }} caractères.
         unique: Cette email existe déjà.
@@ -51,6 +55,7 @@ app:
         length_max_message: Le champ postcode est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ postcode est trop long. IL doit avoir au maximum {{ limit }} caractères.
     reseller:
       password:
+        not_blank: Le champ password ne peut être vide.
         not_compromised_password: Ce mot de passe a été divulgué lors d'une fuite de données, il ne doit plus être utilisé. Veuillez utiliser un autre mot de passe.
         regex: Le mot de passe n'est pas valide. Il doit comporter entre 8 et 255 caractères dont 1 minuscule, 1 majuscule, 1 chiffre et 1 caractère spécial (-.,?;:§+!*$@%_).
       email:
@@ -59,5 +64,6 @@ app:
         length_max_message: Le champ email est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ email est trop long. IL doit avoir au maximum {{ limit }} caractères.
         unique: Cette email existe déjà.
       company:
+        not_blank: Le champ conpany ne peut être vide.
         unique: Cette entreprise existe déjà.
         length_max_message: Le champ company est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ company est trop long. IL doit avoir au maximum {{ limit }} caractères.
