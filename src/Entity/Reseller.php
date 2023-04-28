@@ -43,6 +43,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'app.constraint.reseller.password.not_blank')]
     #[Assert\NotCompromisedPassword(message: 'app.constraint.reseller.password.not_compromised_password')]
     #[Assert\Regex(
         pattern: '/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[-.,?;:§+!*$@%_])([-.,?;:§+!*$@%_\w]{8,255})$/',
@@ -55,8 +56,8 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'app.constraint.reseller.company.not_blank')]
     #[Groups(['read:reseller'])]
-    #[Assert\Length(max:255, maxMessage: 'app.constraint.reseller.company.length_max_message')]
     private ?string $company = null;
 
     #[ORM\Column]

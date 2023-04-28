@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -33,7 +34,9 @@ class CustomerCreateController extends AbstractController
             throw new BadRequestHttpException();
         }
         /** @var Customer $customer */
-        $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json');
+        $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json', [
+            DenormalizerInterface::COLLECT_DENORMALIZATION_ERRORS => true
+        ]);
 
         $errors = $validator->validate($customer);
         if ($errors->count() > 0) {

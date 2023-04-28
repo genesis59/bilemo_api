@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -33,8 +33,12 @@ class ResellerCreateController extends AbstractController
         if ($request->getContent() === "") {
             throw new BadRequestHttpException();
         }
+
         /** @var Reseller $reseller */
-        $reseller = $serializer->deserialize($request->getContent(), Reseller::class, 'json');
+        $reseller = $serializer->deserialize($request->getContent(), Reseller::class, 'json', [
+            DenormalizerInterface::COLLECT_DENORMALIZATION_ERRORS => true
+        ]);
+
         $errors = $validator->validate($reseller);
         if ($errors->count() > 0) {
             $jsonErrors = [];

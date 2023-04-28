@@ -2,17 +2,24 @@
 
 namespace App\EventSubscriber;
 
+use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
+use Symfony\Component\Serializer\Exception\PartialDenormalizationException;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExceptionSubscriber implements EventSubscriberInterface
@@ -51,6 +58,76 @@ class ExceptionSubscriber implements EventSubscriberInterface
         }
 
         $exception = $event->getThrowable();
+
+        if ($exception instanceof NotEncodableValueException) {
+            $event->setResponse(new JsonResponse(
+                $this->serializer->serialize([
+                    'message' => $this->translator->trans('app.exception.not_encodable_value_exception')
+                ], 'json'),
+                Response::HTTP_BAD_REQUEST,
+                [],
+                true
+            ));
+        }
+
+        if ($exception instanceof NotNullConstraintViolationException) {
+            $fieldList = explode(",", explode(")", explode("(", $exception->getQuery()->getSQL())[1])[0]);
+            foreach ($fieldList as $key => $field) {
+                $fieldList[$key] = trim($field);
+            }
+
+            $messages = [];
+            foreach ($exception->getQuery()->getParams() as $key => $value) {
+                if (getType($value) === "NULL") {
+                    $messages[$fieldList[$key - 1]] = $this->translator->trans(
+                        'app.exception.not_null_constraint_violation_exception',
+                        [
+                        "%type%" => $exception->getQuery()->getTypes()[$key]
+                        ]
+                    );
+                }
+            }
+
+            $event->setResponse(new JsonResponse(
+                $this->serializer->serialize($messages, 'json'),
+                Response::HTTP_BAD_REQUEST,
+                [],
+                true
+            ));
+        }
+
+        if ($exception instanceof MethodNotAllowedHttpException) {
+            $event->setResponse(new JsonResponse(
+                $this->serializer->serialize([
+                    'message' => $this->translator->trans('app.exception.method_not_allowed_http_exception', [
+                        "%method%" => $event->getRequest()->getMethod(),
+                        "%uri%" => $event->getRequest()->getUri(),
+                        "%allows%" => $exception->getHeaders()['Allow']
+                    ])
+                ], 'json'),
+                Response::HTTP_METHOD_NOT_ALLOWED,
+                [],
+                true
+            ));
+        }
+
+        if ($exception instanceof PartialDenormalizationException) {
+            $messages = [];
+            /** @var NotNormalizableValueException $e */
+            foreach ($exception->getErrors() as $e) {
+                $messages[$e->getPath()] = $this->translator->trans('app.exception.not_normalizable_value_exception', [
+                    '%type%' => implode(', ', $e->getExpectedTypes()),
+                    '%value%' => $e->getCurrentType()
+                ]);
+            }
+            $event->setResponse(new JsonResponse(
+                $this->serializer->serialize($messages, 'json'),
+                Response::HTTP_BAD_REQUEST,
+                [],
+                true
+            ));
+        }
+
         /** The request hasn't been validated by the validator */
         if ($exception instanceof UnprocessableEntityHttpException) {
             $event->setResponse(new JsonResponse(
@@ -68,7 +145,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 if ($exception->getMessage() === "The key \"password\" must be provided.") {
                     $message = $this->translator->trans('app.exception.bad_request_login_miss_password');
                 }
-                if ($exception->getMessage() === "The key \"username\" must be provided.") {
+                if ($exception->getMessage() === "The key \"email\" must be provided.") {
                     $message = $this->translator->trans('app.exception.bad_request_login_miss_username');
                 }
             }
