@@ -45,14 +45,14 @@ class SmartphoneRepository extends ServiceEntityRepository
     public function searchAndPaginate(int $limit, int $offset, string $search = null): array
     {
         $qb = $this->createQueryBuilder('s');
-        $qb->orWhere($qb->expr()->like('LOWER(s.name)', ':search'))
+        $qb->where($qb->expr()->like('LOWER(s.name)', ':search'))
         ->orWhere($qb->expr()->like('LOWER(brand.name)', ':search'))
         ->setParameter('search', '%' . strtolower($search) . '%')
         ->orderBy('s.createdAt', 'DESC')
         ->setMaxResults($limit)
         ->setFirstResult($offset)
-        ->leftJoin('s.range', 'range')
-        ->leftJoin('range.brand', 'brand')
+        ->innerJoin('s.range', 'range')
+        ->innerJoin('range.brand', 'brand')
         ;
         return $qb->getQuery()->getResult();
     }

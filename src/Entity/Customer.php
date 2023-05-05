@@ -13,7 +13,11 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
-#[UniqueEntity(fields: ['email'], message: 'app.constraint.customer.email.unique')]
+#[UniqueEntity(
+    fields: ['email'],
+    message: 'app.constraint.customer.email.unique',
+    repositoryMethod: 'getSimilarEmailForReseller'
+)]
 class Customer
 {
     #[ORM\Id]
