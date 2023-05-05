@@ -11,15 +11,13 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Serializer\Exception\PartialDenormalizationException;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\ConstraintViolation;
-use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Exception\BadMethodCallException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExceptionSubscriber implements EventSubscriberInterface
@@ -149,7 +147,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
                     $message = $this->translator->trans('app.exception.bad_request_login_miss_username');
                 }
             }
-            if ($event->getRequest()->getContent() === "") {
+            if ($event->getRequest()->getContent() === "" && $event->getRequest()->getMethod() === "POST") {
                 $message = $this->translator->trans('app.exception.bad_request_http_exception');
             }
             $event->setResponse(new JsonResponse(
