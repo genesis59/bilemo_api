@@ -5,11 +5,13 @@ app:
     method_not_allowed_http_exception: "La méthode %method% n'est pas autorisée pour la route %uri% (Autorisée(s): %allows%)."
     not_encodable_value_exception: Les données renseignées comportent une erreur de syntaxe.
     bad_request_http_exception: Le body ne doit pas être vide
+    bad_request_http_exception_page: Le paramètre page que vous avez renseigné doit être un entier supérieur ou égal à 1
+    bad_request_http_exception_limit: Le paramètre limit que vous avez renseigné doit être un entier supérieur ou égal à 1
     bad_request_login_miss_password: La clé password doit être fournie
     bad_request_login_miss_username: La clé email doit être fournie
     bad_content_type: Le Content-Type fourni est incorrect. Veuillez fournir un Content-Type au format json.
     not_found_http_exception: Cette url n'existe pas
-    not_found_http_exception_page: Cette page n'existe pas
+    not_found_http_exception_page: Cette page n'existe pas ou le terme recherché n'a retourné aucun résultat.
     entity_not_found_exception: La ressource demandée n'existe pas, uuid erroné
     internal_server_error: Une erreur interne est survenue. Veuillez réessayer plus tard ou contacter le support si le problème persiste.
   constraint:

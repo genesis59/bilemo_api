@@ -42,6 +42,24 @@ class CustomerRepository extends ServiceEntityRepository
 //    /**
 //     * @return Customer[] Returns an array of Customer objects
 //     */
+//    public function searchAndPaginate(int $limit, int $offset, string $search = null): array
+//    {
+//        $qb = $this->createQueryBuilder('c');
+//        $qb->orWhere($qb->expr()->like('LOWER(c.firstName)', ':search'))
+//            ->orWhere($qb->expr()->like('LOWER(c.lastName)', ':search'))
+//            ->orWhere($qb->expr()->like('LOWER(c.email)', ':search'))
+//            ->setParameter('search', '%' . strtolower($search) . '%')
+//            ->orderBy('c.createdAt', 'DESC')
+//            ->setMaxResults($limit)
+//            ->setFirstResult($offset)
+//        ;
+//        return $qb->getQuery()->getResult();
+//    }
+
+
+//    /**
+//     * @return Customer[] Returns an array of Customer objects
+//     */
 //    public function findByExampleField($value): array
 //    {
 //        return $this->createQueryBuilder('c')

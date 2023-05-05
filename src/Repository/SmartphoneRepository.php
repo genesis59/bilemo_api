@@ -39,6 +39,24 @@ class SmartphoneRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @return Smartphone[] Returns an array of Smartphone objects
+     */
+    public function searchAndPaginate(int $limit, int $offset, string $search = null): array
+    {
+        $qb = $this->createQueryBuilder('s');
+        $qb->orWhere($qb->expr()->like('LOWER(s.name)', ':search'))
+        ->orWhere($qb->expr()->like('LOWER(brand.name)', ':search'))
+        ->setParameter('search', '%' . strtolower($search) . '%')
+        ->orderBy('s.createdAt', 'DESC')
+        ->setMaxResults($limit)
+        ->setFirstResult($offset)
+        ->leftJoin('s.range', 'range')
+        ->leftJoin('range.brand', 'brand')
+        ;
+        return $qb->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Smartphone[] Returns an array of Smartphone objects
 //     */

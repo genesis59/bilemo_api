@@ -24,7 +24,8 @@ class SmartphoneGetAllController extends AbstractController
     ): JsonResponse {
         $page = $request->get('page', 1);
         $limit = $request->get('limit', $this->getParameter('default_smartphone_per_page'));
-        $smartphones = $paginatorService->paginate(Smartphone::class, $page, $limit);
+        $q = $request->get('q');
+        $smartphones = $paginatorService->paginate(Smartphone::class, $page, $limit, $q);
         if (count($smartphones) === 0) {
             throw new NotFoundHttpException(
                 $translator->trans('app.exception.not_found_http_exception_page'),

@@ -24,7 +24,8 @@ class CustomerGetAllController extends AbstractController
     ): JsonResponse {
         $page = $request->get('page', 1);
         $limit = $request->get('limit', $this->getParameter('default_customer_per_page'));
-        $customers = $paginatorService->paginate(Customer::class, $page, $limit);
+        $q = $request->get('q');
+        $customers = $paginatorService->paginate(Customer::class, $page, $limit, $q);
         if (count($customers) === 0) {
             throw new NotFoundHttpException(
                 $translator->trans('app.exception.not_found_http_exception_page'),
