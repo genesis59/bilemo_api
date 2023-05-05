@@ -3,8 +3,11 @@
 namespace App\Paginator;
 
 use App\Entity\Smartphone;
+use App\Repository\CustomerRepository;
+use App\Repository\SmartphoneRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Validator\Exception\BadMethodCallException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaginatorService
@@ -22,7 +25,7 @@ class PaginatorService
      * @param string|null $search
      * @return array<Object>
      */
-    public function paginate(string $className, string $page, string $limit, string $search = null): array
+    public function paginate(string $className, string $page, string $limit, ?string $search = null): array
     {
         $page = intval($page);
         $limit = intval($limit);
@@ -36,8 +39,16 @@ class PaginatorService
                 $this->translator->trans('app.exception.bad_request_http_exception_limit')
             );
         }
+        $repository = $this->managerRegistry->getRepository($className);
+        if (
+            (!$repository instanceof SmartphoneRepository && !$repository instanceof CustomerRepository) ||
+            !method_exists($repository, "searchAndPaginate")
+        ) {
+            throw new BadMethodCallException(
+                $this->translator->trans('app.exception.bad_method_call_exception_searchAndPaginate')
+            );
+        }
 
-        return $this->managerRegistry->getRepository($className)
-            ->searchAndPaginate($limit, ($page - 1) * $limit, $search);
+        return $repository->searchAndPaginate($limit, ($page - 1) * $limit, $search);
     }
 }

@@ -160,6 +160,17 @@ class ExceptionSubscriber implements EventSubscriberInterface
             ));
         }
 
+        if ($exception instanceof BadMethodCallException) {
+            $message = $exception->getMessage();
+            $event->setResponse(new JsonResponse(
+                $this->serializer->serialize([
+                'message' => $message
+                ], 'json'),
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+                [],
+                true
+            ));
+        }
         /** Route not found or content is empty during the paging process */
         if ($exception instanceof NotFoundHttpException) {
             $message = $this->translator->trans('app.exception.not_found_http_exception');
