@@ -40,7 +40,7 @@ class Customer
         maxMessage: 'app.constraint.customer.first_name.length_max_message'
     )]
     #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s\'-]+$/i',
+        pattern: '/^[a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s\'-]+$/i',
         message: 'app.constraint.customer.first_name.regex'
     )]
     private ?string $firstName = null;
@@ -55,7 +55,7 @@ class Customer
         maxMessage: 'app.constraint.customer.last_name.length_max_message'
     )]
     #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s\'-]+$/i',
+        pattern: '/^[a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s\'-]+$/i',
         message: 'app.constraint.customer.last_name.regex'
     )]
     private ?string $lastName = null;

@@ -147,8 +147,11 @@ class ExceptionSubscriber implements EventSubscriberInterface
                     $message = $this->translator->trans('app.exception.bad_request_login_miss_username');
                 }
             }
-            if ($event->getRequest()->getContent() === "" && $event->getRequest()->getMethod() === "POST") {
-                $message = $this->translator->trans('app.exception.bad_request_http_exception');
+            if (
+                $event->getRequest()->getContent() === "" &&
+                ($event->getRequest()->getMethod() === "POST" || $event->getRequest()->getMethod() === "PUT")
+            ) {
+                $message = $this->translator->trans('app.exception.bad_request_http_exception_body_no_empty');
             }
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([

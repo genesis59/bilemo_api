@@ -49,7 +49,9 @@ class CustomerRepository extends ServiceEntityRepository
         $qb->where($qb->expr()->like('LOWER(c.firstName)', ':search'))
             ->orWhere($qb->expr()->like('LOWER(c.lastName)', ':search'))
             ->orWhere($qb->expr()->like('LOWER(c.email)', ':search'))
+            ->andWhere('c.reseller = :reseller')
             ->setParameter('search', '%' . strtolower($search) . '%')
+            ->setParameter('reseller', $this->security->getUser())
             ->orderBy('c.createdAt', 'DESC')
             ->setMaxResults($limit)
             ->setFirstResult($offset)
@@ -65,7 +67,7 @@ class CustomerRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('c')
             ->andWhere('c.email = :email')
-            ->andWhere(':reseller MEMBER OF c.resellers')
+            ->andWhere('c.reseller = :reseller')
             ->setParameter(':email', $args['email'])
             ->setParameter(':reseller', $this->security->getUser())
             ->getQuery()->getResult();

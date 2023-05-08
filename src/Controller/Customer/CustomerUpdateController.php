@@ -37,13 +37,16 @@ class CustomerUpdateController extends AbstractController
         if (!Uuid::isValid($uuid)) {
             throw new EntityNotFoundException();
         }
-        $customer = $customerRepository->findOneBy(['uuid' => $uuid]);
-        if (!$customer) {
-            throw new EntityNotFoundException();
-        }
+
         if ($request->getContent() === "") {
             throw new BadRequestHttpException();
         }
+
+        $customer = $customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
+        if (!$customer) {
+            throw new EntityNotFoundException();
+        }
+
 
         /** @var Customer $updateCustomer */
         $updateCustomer = $serializer->deserialize(
