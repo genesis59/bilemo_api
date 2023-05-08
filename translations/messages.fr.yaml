@@ -18,12 +18,12 @@ app:
   constraint:
     customer:
       first_name:
-        regex: Les caractères spéciaux ne sont pas autorisés.
+        regex: Veuillez vous assurer d'utiliser uniquement des lettres (minuscules et majuscules), des chiffres, des caractères accentués, des espaces, des tirets et des apostrophes.
         not_blank: Le champ firstName ne peut être vide.
         length_min_message: Le champ firstName est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ firstName est trop court. Il doit avoir au minimum {{ limit }} caractères.
         length_max_message: Le champ firstName est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ firstName est trop long. IL doit avoir au maximum {{ limit }} caractères.
       last_name:
-        regex: Les caractères spéciaux ne sont pas autorisés.
+        regex: Veuillez vous assurer d'utiliser uniquement des lettres (minuscules et majuscules), des chiffres, des caractères accentués, des espaces, des tirets et des apostrophes.
         not_blank: Le champ lastName ne peut être vide.
         length_min_message: Le champ lastName est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ lastName est trop court. Il doit avoir au minimum {{ limit }} caractères.
         length_max_message: Le champ lastName est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ lastName est trop long. IL doit avoir au maximum {{ limit }} caractères.
@@ -37,22 +37,22 @@ app:
         length_min_message: Le champ phoneNumber est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ phoneNumber est trop court. Il doit avoir au minimum {{ limit }} caractères.
         length_max_message: Le champ phoneNumber est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ phoneNumber est trop long. IL doit avoir au maximum {{ limit }} caractères.
       street:
-        regex: Le champ ne doit contenir que des lettres, des chiffres, des virgules et des espaces.
+        regex: Veuillez vous assurer d'utiliser uniquement des lettres (minuscules et majuscules), des chiffres, des caractères accentués, des virgules, des espaces, des tirets et des apostrophes.
         not_blank: Le champ street ne peut être vide.
         length_min_message: Le champ street est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ street est trop court. Il doit avoir au minimum {{ limit }} caractères.
         length_max_message: Le champ street est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ street est trop long. IL doit avoir au maximum {{ limit }} caractères.
       city:
-        regex: Le champ ne doit contenir que des lettres, des chiffres et des espaces.
+        regex: Veuillez vous assurer d'utiliser uniquement des lettres (minuscules et majuscules), des chiffres, des caractères accentués, des virgules, des espaces, des tirets et des apostrophes.
         not_blank: Le champ city ne peut être vide.
         length_min_message: Le champ city est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ city est trop court. Il doit avoir au minimum {{ limit }} caractères.
         length_max_message: Le champ city est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ city est trop long. IL doit avoir au maximum {{ limit }} caractères.
       country:
-        regex: Le champ ne doit contenir que des lettres, des chiffres et des espaces.
+        regex: Veuillez vous assurer d'utiliser uniquement des lettres (minuscules et majuscules), des chiffres, des caractères accentués, des virgules, des espaces, des tirets et des apostrophes.
         not_blank: Le champ country ne peut être vide.
         length_min_message: Le champ country est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ country est trop court. Il doit avoir au minimum {{ limit }} caractères.
         length_max_message: Le champ country est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ country est trop long. IL doit avoir au maximum {{ limit }} caractères.
       postcode:
-        regex: Les caractères spéciaux et accentués ne sont pas autorisés.
+        regex: Veuillez vous assurer d'utiliser uniquement des lettres (minuscules et majuscules), des chiffres, des caractères accentués, des virgules, des espaces, des tirets et des apostrophes.
         not_blank: Le champ postcode ne peut être vide.
         length_min_message: Le champ postcode est trop court. Il doit avoir au minimum {{ limit }} caractère.|Le champ postcode est trop court. Il doit avoir au minimum {{ limit }} caractères.
         length_max_message: Le champ postcode est trop long. Il doit avoir au maximum {{ limit }} caractère.|Le champ postcode est trop long. IL doit avoir au maximum {{ limit }} caractères.
