@@ -21,20 +21,20 @@ class Range
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'ranges')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?Brand $brand = null;
 
     #[ORM\OneToMany(mappedBy: 'range', targetEntity: Smartphone::class)]

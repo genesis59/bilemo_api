@@ -64,7 +64,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['read:reseller'])]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToMany(targetEntity: Customer::class, mappedBy: 'resellers')]
+    #[ORM\OneToMany(mappedBy: 'reseller', targetEntity: Customer::class, orphanRemoval: true)]
     private Collection $customers;
 
     public function __construct()
@@ -194,7 +194,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->customers->contains($customer)) {
             $this->customers->add($customer);
-            $customer->addReseller($this);
+            $customer->setReseller($this);
         }
 
         return $this;
@@ -203,7 +203,10 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeCustomer(Customer $customer): self
     {
         if ($this->customers->removeElement($customer)) {
-            $customer->removeReseller($this);
+            // set the owning side to null (unless already changed)
+            if ($customer->getReseller() === $this) {
+                $customer->setReseller(null);
+            }
         }
 
         return $this;

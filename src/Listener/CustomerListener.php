@@ -19,7 +19,7 @@ class CustomerListener
         if ($this->security->getUser()) {
             /** @var Reseller $reseller */
             $reseller = $this->security->getUser();
-            $customer->addReseller($reseller);
+            $customer->setReseller($reseller);
             $customer->setCreatedAt(new \DateTimeImmutable());
         }
         $customer->setUuid(Uuid::v4());

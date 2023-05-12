@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Customer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * @extends ServiceEntityRepository<Customer>
@@ -16,7 +17,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CustomerRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, private readonly Security $security)
     {
         parent::__construct($registry, Customer::class);
     }
@@ -39,22 +40,42 @@ class CustomerRepository extends ServiceEntityRepository
         }
     }
 
-//    /**
-//     * @return Customer[] Returns an array of Customer objects
-//     */
-//    public function searchAndPaginate(int $limit, int $offset, string $search = null): array
-//    {
-//        $qb = $this->createQueryBuilder('c');
-//        $qb->orWhere($qb->expr()->like('LOWER(c.firstName)', ':search'))
-//            ->orWhere($qb->expr()->like('LOWER(c.lastName)', ':search'))
-//            ->orWhere($qb->expr()->like('LOWER(c.email)', ':search'))
-//            ->setParameter('search', '%' . strtolower($search) . '%')
-//            ->orderBy('c.createdAt', 'DESC')
-//            ->setMaxResults($limit)
-//            ->setFirstResult($offset)
-//        ;
-//        return $qb->getQuery()->getResult();
-//    }
+    /**
+     * @return Customer[] Returns an array of Customer objects
+     */
+    public function searchAndPaginate(?int $limit, ?int $offset, string $search = null): array
+    {
+        $qb = $this->createQueryBuilder('c');
+        $qb->where($qb->expr()->like('LOWER(c.firstName)', ':search'))
+            ->orWhere($qb->expr()->like('LOWER(c.lastName)', ':search'))
+            ->orWhere($qb->expr()->like('LOWER(c.email)', ':search'))
+            ->andWhere('c.reseller = :reseller')
+            ->setParameter('search', '%' . strtolower($search) . '%')
+            ->setParameter('reseller', $this->security->getUser())
+            ->orderBy('c.createdAt', 'DESC');
+        if ($limit !== null) {
+            $qb->setMaxResults($limit);
+        }
+        if ($offset !== null) {
+            $qb->setFirstResult($offset);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @param array<mixed> $args
+     * @return array<Customer>
+     */
+    public function getSimilarEmailForReseller(array $args): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.email = :email')
+            ->andWhere('c.reseller = :reseller')
+            ->setParameter(':email', $args['email'])
+            ->setParameter(':reseller', $this->security->getUser())
+            ->getQuery()->getResult();
+    }
 
 
 //    /**

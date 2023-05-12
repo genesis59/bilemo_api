@@ -21,129 +21,129 @@ class Smartphone
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 7, scale: 2)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?string $price = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?\DateTimeImmutable $startedAt = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?\DateTimeImmutable $endedAt = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?string $technology = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?string $operatingSystem = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $specificAbsorptionRateMember = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $specificAbsorptionRateTrunk = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $specificAbsorptionRateHead = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $weight = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $width = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $height = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $depth = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $sparePartsAvailibility = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $indexRepairibility = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $ecoRatingDurability = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $ecoRatingClimateRespect = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $ecoRatingRepairability = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $ecoRatingResourcesPreservation = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $ecoRatingRecyclability = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?bool $microSdSlotMemory = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $romMemory = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $callAutonomy = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $batteryAutonomy = null;
 
     #[ORM\OneToMany(mappedBy: 'smartphone', targetEntity: Picture::class, orphanRemoval: true)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private Collection $pictures;
 
     #[ORM\ManyToOne(inversedBy: 'smartphones')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?Range $range = null;
 
     #[ORM\ManyToMany(targetEntity: Camera::class, inversedBy: 'smartphones')]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private Collection $cameras;
 
     #[ORM\ManyToMany(targetEntity: Color::class, inversedBy: 'smartphones')]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private Collection $colors;
 
     #[ORM\ManyToOne(inversedBy: 'smartphones')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?Screen $screen = null;
 
     #[ORM\ManyToMany(targetEntity: Customer::class, mappedBy: 'smartphones')]

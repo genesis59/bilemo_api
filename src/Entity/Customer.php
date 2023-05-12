@@ -13,7 +13,11 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
-#[UniqueEntity(fields: ['email'], message: 'app.constraint.customer.email.unique')]
+#[UniqueEntity(
+    fields: ['email'],
+    message: 'app.constraint.customer.email.unique',
+    repositoryMethod: 'getSimilarEmailForReseller'
+)]
 class Customer
 {
     #[ORM\Id]
@@ -36,7 +40,7 @@ class Customer
         maxMessage: 'app.constraint.customer.first_name.length_max_message'
     )]
     #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]+$/i',
+        pattern: '/^[a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s\'-]+$/i',
         message: 'app.constraint.customer.first_name.regex'
     )]
     private ?string $firstName = null;
@@ -51,7 +55,7 @@ class Customer
         maxMessage: 'app.constraint.customer.last_name.length_max_message'
     )]
     #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ]+$/i',
+        pattern: '/^[a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s\'-]+$/i',
         message: 'app.constraint.customer.last_name.regex'
     )]
     private ?string $lastName = null;
@@ -84,7 +88,7 @@ class Customer
         maxMessage: 'app.constraint.customer.street.length_max_message'
     )]
     #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ,\s]+$/i',
+        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s\'-,]+$/i',
         message: 'app.constraint.customer.last_name.regex'
     )]
     private ?string $street = null;
@@ -99,7 +103,7 @@ class Customer
         maxMessage: 'app.constraint.customer.city.length_max_message'
     )]
     #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s]+$/i',
+        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s\'-,]+$/i',
         message: 'app.constraint.customer.last_name.regex'
     )]
     private ?string $city = null;
@@ -114,7 +118,7 @@ class Customer
         maxMessage: 'app.constraint.customer.country.length_max_message'
     )]
     #[Assert\Regex(
-        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s]+$/i',
+        pattern: '/^[a-zA-Z0-9áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s\'-,]+$/i',
         message: 'app.constraint.customer.last_name.regex'
     )]
     private ?string $country = null;
@@ -142,15 +146,15 @@ class Customer
     #[Groups(['read:customer'])]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToMany(targetEntity: Reseller::class, inversedBy: 'customers')]
-    private Collection $resellers;
+    #[ORM\ManyToOne(inversedBy: 'customers')]
+    private Reseller $reseller;
 
     #[ORM\ManyToMany(targetEntity: Smartphone::class, inversedBy: 'customers')]
+//    #[Groups(['read:customer'])]
     private Collection $smartphones;
 
     public function __construct()
     {
-        $this->resellers = new ArrayCollection();
         $this->smartphones = new ArrayCollection();
     }
 
@@ -291,26 +295,15 @@ class Customer
         return $this;
     }
 
-    /**
-     * @return Collection<int, Reseller>
-     */
-    public function getResellers(): Collection
+    public function getReseller(): ?Reseller
     {
-        return $this->resellers;
+        return $this->reseller;
     }
 
-    public function addReseller(Reseller $reseller): self
-    {
-        if (!$this->resellers->contains($reseller)) {
-            $this->resellers->add($reseller);
-        }
 
-        return $this;
-    }
-
-    public function removeReseller(Reseller $reseller): self
+    public function setReseller(?Reseller $reseller): self
     {
-        $this->resellers->removeElement($reseller);
+        $this->reseller = $reseller;
 
         return $this;
     }

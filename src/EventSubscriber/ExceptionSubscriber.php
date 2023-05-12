@@ -147,8 +147,11 @@ class ExceptionSubscriber implements EventSubscriberInterface
                     $message = $this->translator->trans('app.exception.bad_request_login_miss_username');
                 }
             }
-            if ($event->getRequest()->getContent() === "" && $event->getRequest()->getMethod() === "POST") {
-                $message = $this->translator->trans('app.exception.bad_request_http_exception');
+            if (
+                $event->getRequest()->getContent() === "" &&
+                ($event->getRequest()->getMethod() === "POST" || $event->getRequest()->getMethod() === "PUT")
+            ) {
+                $message = $this->translator->trans('app.exception.bad_request_http_exception_body_no_empty');
             }
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([
@@ -160,6 +163,17 @@ class ExceptionSubscriber implements EventSubscriberInterface
             ));
         }
 
+        if ($exception instanceof BadMethodCallException) {
+            $message = $exception->getMessage();
+            $event->setResponse(new JsonResponse(
+                $this->serializer->serialize([
+                'message' => $message
+                ], 'json'),
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+                [],
+                true
+            ));
+        }
         /** Route not found or content is empty during the paging process */
         if ($exception instanceof NotFoundHttpException) {
             $message = $this->translator->trans('app.exception.not_found_http_exception');

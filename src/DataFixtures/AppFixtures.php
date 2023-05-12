@@ -58,7 +58,7 @@ class AppFixtures extends Fixture
         }
 
         PictureFactory::createMany(50);
-        ResellerFactory::createMany(2);
+        ResellerFactory::createMany(5);
         CustomerFactory::createMany(200);
 
         /** @var Proxy $customerProxy */
@@ -73,13 +73,11 @@ class AppFixtures extends Fixture
                 $smartphone = $smartphoneProxy->object();
                 $customer->addSmartphone($smartphone);
             }
-
             /** @var Proxy $resellerProxy */
-            foreach (ResellerFactory::randomSet(rand(1, 2)) as $resellerProxy) {
-                /** @var Reseller $reseller */
-                $reseller = $resellerProxy->object();
-                $customer->addReseller($reseller);
-            }
+            $resellerProxy = ResellerFactory::random();
+            /** @var Reseller $reseller */
+            $reseller = $resellerProxy->object();
+            $customer->setReseller($reseller);
         }
 
         $manager->flush();

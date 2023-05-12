@@ -2,6 +2,8 @@
 
 namespace App\Controller\Customer;
 
+use App\Entity\Customer;
+use App\Entity\Reseller;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,8 +23,9 @@ class CustomerDeleteController extends AbstractController
         if (!Uuid::isValid($uuid)) {
             throw new EntityNotFoundException();
         }
-        $customer = $customerRepository->findOneBy(['uuid' => $uuid]);
-        if (!$customer) {
+        /** @var Customer $customer */
+        $customer = $customerRepository->findOneBy(['uuid' => $uuid,'reseller' => $this->getUser()]);
+        if ($customer == null) {
             throw new EntityNotFoundException();
         }
         $customerRepository->remove($customer, true);
