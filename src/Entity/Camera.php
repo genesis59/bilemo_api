@@ -20,31 +20,31 @@ class Camera
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $numericZoom = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $resolution = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?bool $numericZoomBack = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?bool $flash = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?bool $flashBack = null;
 
     #[ORM\ManyToMany(targetEntity: Smartphone::class, mappedBy: 'cameras')]

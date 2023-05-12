@@ -25,8 +25,8 @@ class CustomerGetAllController extends AbstractController
         $page = $request->get('page', 1);
         $limit = $request->get('limit', $this->getParameter('default_customer_per_page'));
         $q = $request->get('q');
-        $customers = $paginatorService->paginate(Customer::class, $page, $limit, $q);
-        if (count($customers) === 0) {
+        $data = $paginatorService->paginate(Customer::class, $page, $limit, $q);
+        if (count($data["items"]) === 0) {
             throw new NotFoundHttpException(
                 $translator->trans('app.exception.not_found_http_exception_page'),
                 null,
@@ -34,6 +34,6 @@ class CustomerGetAllController extends AbstractController
                 ['page' => true]
             );
         }
-        return $this->json($customers, Response::HTTP_OK, [], ['groups' => 'read:customer']);
+        return $this->json($data, Response::HTTP_OK, [], ['groups' => 'read:customer']);
     }
 }

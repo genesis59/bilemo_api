@@ -43,7 +43,7 @@ class CustomerRepository extends ServiceEntityRepository
     /**
      * @return Customer[] Returns an array of Customer objects
      */
-    public function searchAndPaginate(int $limit, int $offset, string $search = null): array
+    public function searchAndPaginate(?int $limit, ?int $offset, string $search = null): array
     {
         $qb = $this->createQueryBuilder('c');
         $qb->where($qb->expr()->like('LOWER(c.firstName)', ':search'))
@@ -52,10 +52,14 @@ class CustomerRepository extends ServiceEntityRepository
             ->andWhere('c.reseller = :reseller')
             ->setParameter('search', '%' . strtolower($search) . '%')
             ->setParameter('reseller', $this->security->getUser())
-            ->orderBy('c.createdAt', 'DESC')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset)
-        ;
+            ->orderBy('c.createdAt', 'DESC');
+        if ($limit !== null) {
+            $qb->setMaxResults($limit);
+        }
+        if ($offset !== null) {
+            $qb->setFirstResult($offset);
+        }
+
         return $qb->getQuery()->getResult();
     }
 

@@ -25,8 +25,8 @@ class SmartphoneGetAllController extends AbstractController
         $page = $request->get('page', 1);
         $limit = $request->get('limit', $this->getParameter('default_smartphone_per_page'));
         $q = $request->get('q');
-        $smartphones = $paginatorService->paginate(Smartphone::class, $page, $limit, $q);
-        if (count($smartphones) === 0) {
+        $data = $paginatorService->paginate(Smartphone::class, $page, $limit, $q);
+        if (count($data["items"]) === 0) {
             throw new NotFoundHttpException(
                 $translator->trans('app.exception.not_found_http_exception_page'),
                 null,
@@ -34,6 +34,6 @@ class SmartphoneGetAllController extends AbstractController
                 ['page' => true]
             );
         }
-        return $this->json($smartphones, Response::HTTP_OK, [], ['groups' => 'read:smartphone']);
+        return $this->json($data, Response::HTTP_OK, [], ['groups' => 'read:smartphone']);
     }
 }

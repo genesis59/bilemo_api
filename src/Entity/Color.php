@@ -20,15 +20,15 @@ class Color
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 20)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?string $hex = null;
 
     #[ORM\ManyToMany(targetEntity: Smartphone::class, mappedBy: 'colors')]

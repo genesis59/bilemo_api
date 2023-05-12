@@ -150,6 +150,7 @@ class Customer
     private Reseller $reseller;
 
     #[ORM\ManyToMany(targetEntity: Smartphone::class, inversedBy: 'customers')]
+//    #[Groups(['read:customer'])]
     private Collection $smartphones;
 
     public function __construct()

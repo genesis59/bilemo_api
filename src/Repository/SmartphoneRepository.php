@@ -42,7 +42,7 @@ class SmartphoneRepository extends ServiceEntityRepository
     /**
      * @return Smartphone[] Returns an array of Smartphone objects
      */
-    public function searchAndPaginate(int $limit, int $offset, string $search = null): array
+    public function searchAndPaginate(?int $limit, ?int $offset, string $search = null): array
     {
         $qb = $this->createQueryBuilder('s');
         $qb->where($qb->expr()->like('LOWER(s.name)', ':search'))
@@ -52,8 +52,13 @@ class SmartphoneRepository extends ServiceEntityRepository
         ->setMaxResults($limit)
         ->setFirstResult($offset)
         ->innerJoin('s.range', 'range')
-        ->innerJoin('range.brand', 'brand')
-        ;
+        ->innerJoin('range.brand', 'brand');
+        if ($limit !== null) {
+            $qb->setMaxResults($limit);
+        }
+        if ($offset !== null) {
+            $qb->setFirstResult($offset);
+        }
         return $qb->getQuery()->getResult();
     }
 

@@ -20,19 +20,19 @@ class Screen
     private ?int $id = null;
 
     #[ORM\Column(type: 'uuid')]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?string $resolutionMainScreen = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?int $diagonal = null;
 
     #[ORM\Column]
-    #[Groups('read:smartphone')]
+    #[Groups(['read:smartphone','read:customer'])]
     private ?bool $touchScreen = null;
 
     #[ORM\OneToMany(mappedBy: 'screen', targetEntity: Smartphone::class)]
