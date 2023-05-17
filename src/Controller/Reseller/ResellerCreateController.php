@@ -36,7 +36,8 @@ class ResellerCreateController extends AbstractController
 
         /** @var Reseller $reseller */
         $reseller = $serializer->deserialize($request->getContent(), Reseller::class, 'json', [
-            DenormalizerInterface::COLLECT_DENORMALIZATION_ERRORS => true
+            DenormalizerInterface::COLLECT_DENORMALIZATION_ERRORS => true,
+            "groups" => "post:reseller"
         ]);
 
         $errors = $validator->validate($reseller);

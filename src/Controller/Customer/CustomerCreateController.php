@@ -35,7 +35,8 @@ class CustomerCreateController extends AbstractController
         }
         /** @var Customer $customer */
         $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json', [
-            DenormalizerInterface::COLLECT_DENORMALIZATION_ERRORS => true
+            DenormalizerInterface::COLLECT_DENORMALIZATION_ERRORS => true,
+            'groups' => 'post:customer'
         ]);
 
         $errors = $validator->validate($customer);

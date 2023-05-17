@@ -2,6 +2,7 @@
 
 namespace App\Serializer\Normalizer;
 
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -10,7 +11,8 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 class SmartphoneNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
     public function __construct(
-        private readonly ObjectNormalizer $normalizer,
+        #[Autowire(service: ObjectNormalizer::class)]
+        private readonly NormalizerInterface $normalizer,
         private readonly UrlGeneratorInterface $urlGenerator
     ) {
     }

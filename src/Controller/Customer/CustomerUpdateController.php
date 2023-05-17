@@ -55,7 +55,8 @@ class CustomerUpdateController extends AbstractController
             'json',
             [
                 AbstractNormalizer::OBJECT_TO_POPULATE => $customer,
-                DenormalizerInterface::COLLECT_DENORMALIZATION_ERRORS => true
+                DenormalizerInterface::COLLECT_DENORMALIZATION_ERRORS => true,
+                'groups' => 'update:customer'
             ]
         );
         $errors = $validator->validate($updateCustomer);
