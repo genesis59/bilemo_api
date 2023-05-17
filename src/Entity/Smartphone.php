@@ -14,6 +14,13 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Entity(repositoryClass: SmartphoneRepository::class)]
 class Smartphone
 {
+    /**
+     * @var array|string[]
+     */
+    private array $normalizationContextRoute = [
+        "self" => 'app_get_smartphone'
+    ];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -605,5 +612,23 @@ class Smartphone
         }
 
         return $this;
+    }
+
+    /**
+     * @return array|string[]
+     */
+    public function getNormalizationContextRoute(): array
+    {
+        return $this->normalizationContextRoute;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRoutes(): array
+    {
+        return [
+            "self" => 'app_get_smartphone'
+        ];
     }
 }

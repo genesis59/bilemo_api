@@ -34,6 +34,6 @@ class CustomerGetAllController extends AbstractController
                 ['page' => true]
             );
         }
-        return $this->json($data, Response::HTTP_OK, [], ['groups' => 'read:customer']);
+        return $this->json($data, Response::HTTP_OK, [], ['groups' => 'read:customer', ]);
     }
 }
