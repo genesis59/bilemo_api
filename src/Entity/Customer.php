@@ -31,7 +31,7 @@ class Customer
     private ?Uuid $uuid = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read:customer'])]
+    #[Groups(['read:customer','update:customer','post:customer'])]
     #[Assert\NotBlank(message: 'app.constraint.customer.first_name.not_blank')]
     #[Assert\Length(
         min:1,
@@ -46,7 +46,7 @@ class Customer
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read:customer'])]
+    #[Groups(['read:customer','update:customer','post:customer'])]
     #[Assert\NotBlank(message: 'app.constraint.customer.last_name.not_blank')]
     #[Assert\Length(
         min: 1,
@@ -64,11 +64,11 @@ class Customer
     #[Assert\NotBlank(message: 'app.constraint.customer.email.not_blank')]
     #[Assert\Email(message: 'app.constraint.customer.email.email')]
     #[Assert\Length(max:255, maxMessage: 'app.constraint.customer.email.length_max_message')]
-    #[Groups(['read:customer'])]
+    #[Groups(['read:customer','update:customer','post:customer'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read:customer'])]
+    #[Groups(['read:customer','update:customer','post:customer'])]
     #[Assert\NotBlank(message: 'app.constraint.customer.phone_number.not_blank')]
     #[Assert\Length(
         min: 2,
@@ -79,7 +79,7 @@ class Customer
     private ?string $phoneNumber = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read:customer'])]
+    #[Groups(['read:customer','update:customer','post:customer'])]
     #[Assert\NotBlank(message: 'app.constraint.customer.street.not_blank')]
     #[Assert\Length(
         min: 2,
@@ -94,7 +94,7 @@ class Customer
     private ?string $street = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read:customer'])]
+    #[Groups(['read:customer','update:customer','post:customer'])]
     #[Assert\NotBlank(message: 'app.constraint.customer.city.not_blank')]
     #[Assert\Length(
         min: 2,
@@ -109,7 +109,7 @@ class Customer
     private ?string $city = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read:customer'])]
+    #[Groups(['read:customer','update:customer','post:customer'])]
     #[Assert\NotBlank(message: 'app.constraint.customer.country.not_blank')]
     #[Assert\Length(
         min: 2,
@@ -124,7 +124,7 @@ class Customer
     private ?string $country = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['read:customer'])]
+    #[Groups(['read:customer','update:customer','post:customer'])]
     #[Assert\NotBlank(message: 'app.constraint.customer.postcode.not_blank')]
     #[Assert\Length(
         min: 2,
@@ -150,7 +150,7 @@ class Customer
     private Reseller $reseller;
 
     #[ORM\ManyToMany(targetEntity: Smartphone::class, inversedBy: 'customers')]
-//    #[Groups(['read:customer'])]
+    #[Groups(['read:customer'])]
     private Collection $smartphones;
 
     public function __construct()
@@ -330,5 +330,18 @@ class Customer
         $this->smartphones->removeElement($smartphone);
 
         return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getRoutes(): array
+    {
+        return [
+            "self" => 'app_get_customer',
+            "create" => 'app_create_customer',
+            "update" => 'app_update_customer',
+            "delete" => 'app_delete_customer'
+        ];
     }
 }
