@@ -30,6 +30,9 @@ class SmartphoneGetOneController extends AbstractController
         if (!$smartphone) {
             throw new EntityNotFoundException();
         }
-        return $this->json($smartphone, Response::HTTP_OK, [], ['groups' => 'read:smartphone']);
+        return $this->json($smartphone, Response::HTTP_OK, [], [
+            'groups' => 'read:smartphone',
+            'links' => ["self" => "app_get_smartphone"]
+        ]);
     }
 }

@@ -25,6 +25,14 @@ class CustomerGetOneController extends AbstractController
         if (!$customer) {
             throw new EntityNotFoundException();
         }
-        return $this->json($customer, Response::HTTP_OK, [], ['groups' => 'read:customer']);
+        return $this->json($customer, Response::HTTP_OK, [], [
+            'groups' => 'read:customer',
+            'links' => [
+                "self" => 'app_get_customer',
+                "create" => 'app_create_customer',
+                "update" => 'app_update_customer',
+                "delete" => 'app_delete_customer'
+            ]
+        ]);
     }
 }

@@ -331,17 +331,4 @@ class Customer
 
         return $this;
     }
-
-    /**
-     * @return string[]
-     */
-    public function getRoutes(): array
-    {
-        return [
-            "self" => 'app_get_customer',
-            "create" => 'app_create_customer',
-            "update" => 'app_update_customer',
-            "delete" => 'app_delete_customer'
-        ];
-    }
 }
