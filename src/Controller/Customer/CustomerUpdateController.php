@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,10 +20,16 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CustomerUpdateController extends AbstractController
 {
+    /**
+     * @throws InvalidArgumentException
+     * @throws EntityNotFoundException
+     */
     #[Route('/api/customers/{uuid}', name: 'app_update_customer', methods: ['PUT'])]
     public function __invoke(
         Request $request,
@@ -31,7 +38,8 @@ class CustomerUpdateController extends AbstractController
         string $uuid,
         ValidatorInterface $validator,
         TranslatorInterface $translator,
-        ManagerRegistry $managerRegistry
+        ManagerRegistry $managerRegistry,
+        TagAwareCacheInterface $cache
     ): JsonResponse {
 
         if (!Uuid::isValid($uuid)) {
@@ -59,6 +67,7 @@ class CustomerUpdateController extends AbstractController
                 'groups' => 'update:customer'
             ]
         );
+
         $errors = $validator->validate($updateCustomer);
         if ($errors->count() > 0) {
             $jsonErrors = [];
@@ -69,6 +78,18 @@ class CustomerUpdateController extends AbstractController
             throw new UnprocessableEntityHttpException('', null, 0, ['errors' => $jsonErrors]);
         }
         $managerRegistry->getManager()->flush();
-        return $this->json($updateCustomer, Response::HTTP_OK, [], ['groups' => 'read:customer']);
+        $key = "customer-" . $uuid;
+        $cache->delete($key);
+        $cache->invalidateTags(['customersCache']);
+        $dataJson = $cache->get(
+            $key,
+            function (ItemInterface $item) use ($customer, $serializer) {
+                echo 'Le client a bien été mis à jour !' . PHP_EOL;
+                return $serializer->serialize($customer, 'json', [
+                    'groups' => 'read:customer'
+                ]);
+            }
+        );
+        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
     }
 }

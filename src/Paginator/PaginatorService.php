@@ -54,23 +54,20 @@ class PaginatorService
             );
         }
 
-        return [
-            "_pagination" => $this->getItemsPagination($repository, $page, $limit, $search),
-            "items" => [
-                ...$repository->searchAndPaginate($limit, ($page - 1) * $limit, $search)
-            ]
-        ];
+        return $repository->searchAndPaginate($limit, ($page - 1) * $limit, $search);
     }
 
     /**
      * @param ServiceEntityRepositoryInterface $repository
+     * @param string $routeName
      * @param int $currentPage
      * @param int $limit
      * @param string|null $search
      * @return array<string,mixed>
      */
-    public function getItemsPagination(
+    public function getInfoPagination(
         ServiceEntityRepositoryInterface $repository,
+        string $routeName,
         int $currentPage,
         int $limit,
         ?string $search
@@ -90,17 +87,17 @@ class PaginatorService
             "current_page_number" => $currentPage,
             "number_items_per_page" => $limit,
             "total_items_count" => count($items),
-            "first_page_link" => $this->urlGenerator->generate('app_get_customers', ['limit' => $limit]),
+            "first_page_link" => $this->urlGenerator->generate($routeName, ['limit' => $limit]),
             "last_page_link" => $this->urlGenerator->generate(
                 'app_get_customers',
                 ['limit' => $limit, "page" => $lastPage]
             ),
             "previous_page_link" => $currentPage === 1 ? null : $this->urlGenerator->generate(
-                'app_get_customers',
+                $routeName,
                 ['limit' => $limit,"page" => $currentPage - 1]
             ),
             "next_page_link" => $currentPage < $lastPage ? $this->urlGenerator->generate(
-                'app_get_customers',
+                $routeName,
                 ['limit' => $limit,"page" => $currentPage + 1]
             ) : null
         ];

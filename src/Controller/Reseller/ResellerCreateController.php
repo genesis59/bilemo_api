@@ -4,6 +4,7 @@ namespace App\Controller\Reseller;
 
 use App\Entity\Reseller;
 use App\Repository\ResellerRepository;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,10 +17,14 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ResellerCreateController extends AbstractController
 {
+    /**
+     * @throws InvalidArgumentException
+     */
     #[Route('/api/auth/signup', name: 'app_create_reseller', methods: ['POST'])]
     public function __invoke(
         Request $request,
@@ -27,7 +32,8 @@ class ResellerCreateController extends AbstractController
         ResellerRepository $resellerRepository,
         UserPasswordHasherInterface $passwordHasher,
         ValidatorInterface $validator,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        TagAwareCacheInterface $cache
     ): JsonResponse {
 
         if ($request->getContent() === "") {
@@ -50,7 +56,7 @@ class ResellerCreateController extends AbstractController
             throw new UnprocessableEntityHttpException('My custom error message', null, 0, ['errors' => $jsonErrors]);
         }
         $resellerRepository->save($reseller, true);
-
+        $cache->invalidateTags(['customersCache']);
         return $this->json($reseller, Response::HTTP_CREATED, [], ['groups' => 'read:reseller']);
     }
 }

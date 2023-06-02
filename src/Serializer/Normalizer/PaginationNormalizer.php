@@ -3,16 +3,13 @@
 namespace App\Serializer\Normalizer;
 
 use App\Entity\Customer;
-use App\Entity\Reseller;
-use App\Entity\Smartphone;
 use App\Service\EntityRouteGenerator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
-class EntityNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
+class PaginationNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
     public function __construct(
         #[Autowire(service: ObjectNormalizer::class)]
@@ -25,16 +22,26 @@ class EntityNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
      * @param $object
      * @param string|null $format
      * @param array<string,mixed> $context
-     * @return array<int|string, mixed>
-     * @throws ExceptionInterface
+     * @return array<string,mixed>
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        /** @var array<mixed> $data */
-        $data = $this->normalizer->normalize($object, $format, $context);
+        $items = [];
+        foreach ($object as $item) {
+            /** @var array<string,mixed> $itemNormalized */
+            $itemNormalized = $this->normalizer->normalize($item, null, [
+                'groups' => $context['groups']
+            ]);
+            $itemTransformed = [
+                "_links" => $this->entityRouteGenerator->getAllEntityRoutesList($item),
+                ...$itemNormalized
+            ];
+            $items[] = $itemTransformed;
+        }
         return [
-            "_links" => $this->entityRouteGenerator->getAllEntityRoutesList($object),
-            ...$data
+            '_pagination' => $context['pagination'],
+            'items' => $items
         ];
     }
 
@@ -46,11 +53,11 @@ class EntityNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
      */
     public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
-        return $data instanceof Customer || $data instanceof Smartphone || $data instanceof Reseller;
+        return is_array($data) && isset($context['pagination']);
     }
 
     public function hasCacheableSupportsMethod(): bool
     {
-        return false;
+        return true;
     }
 }

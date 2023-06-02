@@ -621,14 +621,4 @@ class Smartphone
     {
         return $this->normalizationContextRoute;
     }
-
-    /**
-     * @return string[]
-     */
-    public function getRoutes(): array
-    {
-        return [
-            "self" => 'app_get_smartphone'
-        ];
-    }
 }

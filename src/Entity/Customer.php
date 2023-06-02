@@ -147,6 +147,7 @@ class Customer
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'customers')]
+    #[Groups(['read:customer'])]
     private Reseller $reseller;
 
     #[ORM\ManyToMany(targetEntity: Smartphone::class, inversedBy: 'customers')]
@@ -330,18 +331,5 @@ class Customer
         $this->smartphones->removeElement($smartphone);
 
         return $this;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getRoutes(): array
-    {
-        return [
-            "self" => 'app_get_customer',
-            "create" => 'app_create_customer',
-            "update" => 'app_update_customer',
-            "delete" => 'app_delete_customer'
-        ];
     }
 }

@@ -29,7 +29,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: 'app.constraint.reseller.email.not_blank')]
     #[Assert\Email(message: 'app.constraint.reseller.email.email')]
     #[Assert\Length(max:180, maxMessage: 'app.constraint.reseller.email.length_max_message')]
-    #[Groups(['read:reseller','post:reseller'])]
+    #[Groups(['read:reseller','post:reseller','read:customer'])]
     private ?string $email = null;
 
     /**
@@ -58,7 +58,7 @@ class Reseller implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'app.constraint.reseller.company.not_blank')]
-    #[Groups(['read:reseller','post:reseller'])]
+    #[Groups(['read:reseller','post:reseller','read:customer'])]
     private ?string $company = null;
 
     #[ORM\Column]
