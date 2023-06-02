@@ -5,22 +5,31 @@ namespace App\Controller\Smartphone;
 use App\Entity\Smartphone;
 use App\Paginator\PaginatorService;
 use App\Repository\SmartphoneRepository;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SmartphoneGetAllController extends AbstractController
 {
+    /**
+     * @throws InvalidArgumentException
+     */
     #[Route('/api/smartphones', name: 'app_get_smartphones', methods: ['GET'])]
     public function __invoke(
         Request $request,
         SmartphoneRepository $smartphoneRepository,
         PaginatorService $paginatorService,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        TagAwareCacheInterface $cache,
+        SerializerInterface $serializer
     ): JsonResponse {
         $page = $request->get('page', 1);
         $limit = $request->get('limit', $this->getParameter('default_smartphone_per_page'));
@@ -41,9 +50,17 @@ class SmartphoneGetAllController extends AbstractController
             $limit,
             $q
         );
-        return $this->json($data, Response::HTTP_OK, [], [
-            'groups' => 'read:smartphone',
-            'pagination' => $infoPagination
-        ]);
+        $key = "smartphones-" . $page . "-" . $limit . "-" . $q;
+        $dataJson = $cache->get(
+            $key,
+            function (ItemInterface $item) use ($data, $infoPagination, $serializer) {
+                $item->tag('smartphonesCache');
+                return $serializer->serialize($data, 'json', [
+                    'groups' => 'read:smartphone',
+                    'pagination' => $infoPagination
+                ]);
+            }
+        );
+        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
     }
 }

@@ -4,20 +4,29 @@ namespace App\Controller\Customer;
 
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityNotFoundException;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 class CustomerGetOneController extends AbstractController
 {
     /**
      * @throws EntityNotFoundException
+     * @throws InvalidArgumentException
      */
     #[Route('/api/customers/{uuid}', name: 'app_get_customer', methods: ['GET'])]
-    public function __invoke(string $uuid, CustomerRepository $customerRepository): JsonResponse
-    {
+    public function __invoke(
+        string $uuid,
+        CustomerRepository $customerRepository,
+        TagAwareCacheInterface $cache,
+        SerializerInterface $serializer
+    ): JsonResponse {
         if (!Uuid::isValid($uuid)) {
             throw new EntityNotFoundException();
         }
@@ -25,14 +34,15 @@ class CustomerGetOneController extends AbstractController
         if (!$customer) {
             throw new EntityNotFoundException();
         }
-        return $this->json($customer, Response::HTTP_OK, [], [
-            'groups' => 'read:customer',
-            'links' => [
-                "self" => 'app_get_customer',
-                "create" => 'app_create_customer',
-                "update" => 'app_update_customer',
-                "delete" => 'app_delete_customer'
-            ]
-        ]);
+        $key = "customer-" . $uuid;
+        $dataJson = $cache->get(
+            $key,
+            function (ItemInterface $item) use ($customer, $serializer) {
+                return $serializer->serialize($customer, 'json', [
+                    'groups' => 'read:customer'
+                ]);
+            }
+        );
+        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
     }
 }

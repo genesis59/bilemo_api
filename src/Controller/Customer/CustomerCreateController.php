@@ -5,6 +5,7 @@ namespace App\Controller\Customer;
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use App\Repository\ResellerRepository;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,10 +17,15 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CustomerCreateController extends AbstractController
 {
+    /**
+     * @throws InvalidArgumentException
+     */
     #[Route('/api/customers', name: 'app_create_customer', methods: ['POST'])]
     public function __invoke(
         Request $request,
@@ -27,7 +33,8 @@ class CustomerCreateController extends AbstractController
         ResellerRepository $resellerRepository,
         CustomerRepository $customerRepository,
         ValidatorInterface $validator,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        TagAwareCacheInterface $cache
     ): JsonResponse {
 
         if ($request->getContent() === "") {
@@ -51,6 +58,17 @@ class CustomerCreateController extends AbstractController
         }
         $customerRepository->save($customer, true);
 
-        return $this->json($customer, Response::HTTP_CREATED, [], ['groups' => 'read:customer']);
+        $key = "customer-" . $customer->getUuid();
+        $cache->invalidateTags(['customersCache']);
+        $dataJson = $cache->get(
+            $key,
+            function (ItemInterface $item) use ($customer, $serializer) {
+                echo 'Le client a bien été créé !' . PHP_EOL;
+                return $serializer->serialize($customer, 'json', [
+                    'groups' => 'read:customer'
+                ]);
+            }
+        );
+        return new JsonResponse($dataJson, Response::HTTP_CREATED, [], true);
     }
 }
