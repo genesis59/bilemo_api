@@ -2,10 +2,37 @@
 
 namespace App\Service;
 
+use App\Entity\Customer;
+use App\Entity\Reseller;
+use App\Entity\Smartphone;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class EntityRouteGenerator
 {
+    /**
+     * @var array|string[]
+     */
+    private array $customerRoutes = [
+        "self" => 'app_get_customer',
+        "create" => 'app_create_customer',
+        "update" => 'app_update_customer',
+        "delete" => 'app_delete_customer'
+    ];
+
+    /**
+     * @var array|string[]
+     */
+    private array $smartphoneRoutes = [
+        "self" => "app_get_smartphone"
+    ];
+
+    /**
+     * @var array|string[]
+     */
+    private array $resellerRoutes = [
+        "create" => "app_create_reseller"
+    ];
+
     public function __construct(private readonly UrlGeneratorInterface $urlGenerator)
     {
     }
@@ -13,12 +40,12 @@ class EntityRouteGenerator
     /**
      * @template T
      * @param T $entity
-     * @param array<string,string> $routes
      * @return array<string,string>
      */
-    public function getAllEntityRoutesList($entity, array $routes): array
+    public function getAllEntityRoutesList($entity): array
     {
         $routesList = [];
+        $routes = $this->getRouteNames($entity);
         if (array_key_exists('self', $routes)) {
             $routesList['self'] = $this->getSelfEntityRoute($entity, $routes['self']);
         }
@@ -32,6 +59,26 @@ class EntityRouteGenerator
             $routesList['delete'] = $this->getDeleteEntityRoute($entity, $routes['delete']);
         }
         return $routesList;
+    }
+
+    /**
+     * @template T
+     * @param T $entity
+     * @return array|string[]
+     */
+    public function getRouteNames($entity): array
+    {
+        $routes = [];
+        if ($entity instanceof Customer) {
+            $routes = $this->customerRoutes;
+        }
+        if ($entity instanceof Smartphone) {
+            $routes = $this->smartphoneRoutes;
+        }
+        if ($entity instanceof Reseller) {
+            $routes = $this->resellerRoutes;
+        }
+        return $routes;
     }
 
     /**

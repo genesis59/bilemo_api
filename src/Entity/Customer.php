@@ -147,6 +147,7 @@ class Customer
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'customers')]
+    #[Groups(['read:customer'])]
     private Reseller $reseller;
 
     #[ORM\ManyToMany(targetEntity: Smartphone::class, inversedBy: 'customers')]

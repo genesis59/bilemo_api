@@ -31,11 +31,10 @@ class PaginationNormalizer implements NormalizerInterface, CacheableSupportsMeth
         foreach ($object as $item) {
             /** @var array<string,mixed> $itemNormalized */
             $itemNormalized = $this->normalizer->normalize($item, null, [
-                'groups' => $context['groups'],
-                'links' => $context['links']
+                'groups' => $context['groups']
             ]);
             $itemTransformed = [
-                "_links" => $this->entityRouteGenerator->getAllEntityRoutesList($item, $context['links']),
+                "_links" => $this->entityRouteGenerator->getAllEntityRoutesList($item),
                 ...$itemNormalized
             ];
             $items[] = $itemTransformed;
@@ -54,7 +53,7 @@ class PaginationNormalizer implements NormalizerInterface, CacheableSupportsMeth
      */
     public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
-        return is_array($data) && isset($context['pagination']) && isset($context['links']);
+        return is_array($data) && isset($context['pagination']);
     }
 
     public function hasCacheableSupportsMethod(): bool

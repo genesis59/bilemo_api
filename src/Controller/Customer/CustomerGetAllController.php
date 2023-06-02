@@ -45,13 +45,7 @@ class CustomerGetAllController extends AbstractController
         );
         return $this->json($data, Response::HTTP_OK, [], [
             'groups' => 'read:customer',
-            'pagination' => $infoPagination,
-            'links' => [
-                "self" => 'app_get_customer',
-                "create" => 'app_create_customer',
-                "update" => 'app_update_customer',
-                "delete" => 'app_delete_customer'
-            ]
+            'pagination' => $infoPagination
         ]);
     }
 }

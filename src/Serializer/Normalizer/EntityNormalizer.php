@@ -3,6 +3,7 @@
 namespace App\Serializer\Normalizer;
 
 use App\Entity\Customer;
+use App\Entity\Reseller;
 use App\Entity\Smartphone;
 use App\Service\EntityRouteGenerator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -29,15 +30,12 @@ class EntityNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        /** @var array<string,mixed> $data */
+        /** @var array<mixed> $data */
         $data = $this->normalizer->normalize($object, $format, $context);
-        if (isset($data['uuid'])) {
-            $data = [
-                "_links" => $this->entityRouteGenerator->getAllEntityRoutesList($object, $context['links']),
-                ...$data
-            ];
-        }
-        return $data;
+        return [
+            "_links" => $this->entityRouteGenerator->getAllEntityRoutesList($object),
+            ...$data
+        ];
     }
 
     /**
@@ -48,11 +46,11 @@ class EntityNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
      */
     public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
-        return $data instanceof Customer || $data instanceof Smartphone;
+        return $data instanceof Customer || $data instanceof Smartphone || $data instanceof Reseller;
     }
 
     public function hasCacheableSupportsMethod(): bool
     {
-        return true;
+        return false;
     }
 }

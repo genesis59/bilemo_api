@@ -43,8 +43,7 @@ class SmartphoneGetAllController extends AbstractController
         );
         return $this->json($data, Response::HTTP_OK, [], [
             'groups' => 'read:smartphone',
-            'pagination' => $infoPagination,
-            'links' => ["self" => "app_get_smartphone"]
+            'pagination' => $infoPagination
         ]);
     }
 }
