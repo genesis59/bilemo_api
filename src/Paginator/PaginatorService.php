@@ -2,49 +2,54 @@
 
 namespace App\Paginator;
 
-use App\Entity\Smartphone;
 use App\Repository\CustomerRepository;
 use App\Repository\SmartphoneRepository;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
-use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Exception\BadMethodCallException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaginatorService
 {
+    private int $currentPage;
+    private string $search;
+    private int $limit;
+
+    /**
+     * @var array<object>
+     */
+    private array $data;
+    private int $countItemsTotal;
+    private int $lastPage;
+    private string $currentRoute;
+
     public function __construct(
-        private readonly ManagerRegistry $managerRegistry,
         private readonly TranslatorInterface $translator,
-        private readonly UrlGeneratorInterface $urlGenerator
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly ParameterBagInterface $parameterBag
     ) {
     }
 
-    /**
-     * @param class-string<object> $className
-     * @param string $page
-     * @param string $limit
-     * @param string|null $search
-     * @return array<string,mixed>
-     */
-    public function paginate(string $className, string $page, string $limit, ?string $search = null): array
+    public function create(ServiceEntityRepositoryInterface $repository, Request $request, string $currentRoute): void
     {
-        $page = intval($page);
-        $limit = intval($limit);
-        if ($page < 1) {
+        $this->currentPage = intval($request->get('page', 1));
+        $this->limit = intval($request->get('limit', $this->parameterBag->get('default_customer_per_page')));
+        $this->search = $request->get('q', "");
+        $this->currentRoute = $currentRoute;
+        if ($this->currentPage < 1) {
             throw new BadRequestHttpException(
                 $this->translator->trans('app.exception.bad_request_http_exception_page')
             );
         }
-        if ($limit < 1) {
+        if ($this->limit < 1) {
             throw new BadRequestHttpException(
                 $this->translator->trans('app.exception.bad_request_http_exception_limit')
             );
         }
-        $repository = $this->managerRegistry->getRepository($className);
-
         if (
             (!$repository instanceof SmartphoneRepository && !$repository instanceof CustomerRepository) ||
             !method_exists($repository, "searchAndPaginate")
@@ -53,53 +58,105 @@ class PaginatorService
                 $this->translator->trans('app.exception.bad_method_call_exception_searchAndPaginate')
             );
         }
+        $this->data = $repository->searchAndPaginate(
+            $this->limit,
+            ($this->currentPage - 1) * $this->limit,
+            $this->search
+        );
+        if (count($this->data) === 0) {
+            throw new NotFoundHttpException(
+                $this->translator->trans('app.exception.not_found_http_exception_page'),
+                null,
+                0,
+                ['page' => true]
+            );
+        }
+        $this->countItemsTotal = count($repository->searchAndPaginate(null, null, $this->search));
+        $this->lastPage = intval(ceil($this->countItemsTotal / $this->limit));
+    }
 
-        return $repository->searchAndPaginate($limit, ($page - 1) * $limit, $search);
+    public function getUrlFirstPage(): string
+    {
+        return $this->urlGenerator->generate(
+            $this->currentRoute,
+            ['limit' => $this->limit]
+        );
+    }
+    public function getUrlLastPage(): string
+    {
+        return $this->urlGenerator->generate(
+            'app_get_customers',
+            ['limit' => $this->limit, "page" => $this->lastPage]
+        );
+    }
+    public function getUrlNextPage(): ?string
+    {
+        return $this->currentPage < $this->lastPage ? $this->urlGenerator->generate(
+            $this->currentRoute,
+            ['limit' => $this->limit,"page" => $this->currentPage + 1]
+        ) : null;
+    }
+    public function getUrlPreviousPage(): ?string
+    {
+        return $this->currentPage === 1 ? null : $this->urlGenerator->generate(
+            $this->currentRoute,
+            ['limit' => $this->limit,"page" => $this->currentPage - 1]
+        );
     }
 
     /**
-     * @param ServiceEntityRepositoryInterface $repository
-     * @param string $routeName
-     * @param int $currentPage
-     * @param int $limit
-     * @param string|null $search
-     * @return array<string,mixed>
+     * @return int
      */
-    public function getInfoPagination(
-        ServiceEntityRepositoryInterface $repository,
-        string $routeName,
-        int $currentPage,
-        int $limit,
-        ?string $search
-    ): array {
+    public function getCurrentPage(): int
+    {
+        return $this->currentPage;
+    }
 
-        if (
-            (!$repository instanceof SmartphoneRepository && !$repository instanceof CustomerRepository) ||
-            !method_exists($repository, "searchAndPaginate")
-        ) {
-            throw new BadMethodCallException(
-                $this->translator->trans('app.exception.bad_method_call_exception_searchAndPaginate')
-            );
-        }
-        $items = $repository->searchAndPaginate(null, null, $search);
-        $lastPage = ceil(count($items) / $limit);
-        return [
-            "current_page_number" => $currentPage,
-            "number_items_per_page" => $limit,
-            "total_items_count" => count($items),
-            "first_page_link" => $this->urlGenerator->generate($routeName, ['limit' => $limit]),
-            "last_page_link" => $this->urlGenerator->generate(
-                'app_get_customers',
-                ['limit' => $limit, "page" => $lastPage]
-            ),
-            "previous_page_link" => $currentPage === 1 ? null : $this->urlGenerator->generate(
-                $routeName,
-                ['limit' => $limit,"page" => $currentPage - 1]
-            ),
-            "next_page_link" => $currentPage < $lastPage ? $this->urlGenerator->generate(
-                $routeName,
-                ['limit' => $limit,"page" => $currentPage + 1]
-            ) : null
-        ];
+    /**
+     * @return string
+     */
+    public function getSearch(): string
+    {
+        return $this->search;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLimit(): int
+    {
+        return $this->limit;
+    }
+
+    /**
+     * @return array<object>
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCountItemsTotal(): int
+    {
+        return $this->countItemsTotal;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLastPage(): int
+    {
+        return $this->lastPage;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrentRoute(): string
+    {
+        return $this->currentRoute;
     }
 }

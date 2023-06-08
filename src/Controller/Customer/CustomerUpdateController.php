@@ -85,6 +85,7 @@ class CustomerUpdateController extends AbstractController
             $key,
             function (ItemInterface $item) use ($customer, $serializer) {
                 echo 'Le client a bien été mis à jour !' . PHP_EOL;
+                $item->expiresAfter(300);
                 return $serializer->serialize($customer, 'json', [
                     'groups' => 'read:customer'
                 ]);

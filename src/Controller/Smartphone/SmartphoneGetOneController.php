@@ -42,6 +42,7 @@ class SmartphoneGetOneController extends AbstractController
         $dataJson = $cache->get(
             $key,
             function (ItemInterface $item) use ($smartphone, $serializer) {
+                $item->expiresAfter(300);
                 return $serializer->serialize($smartphone, 'json', [
                     'groups' => 'read:smartphone'
                 ]);

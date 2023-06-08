@@ -22,9 +22,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ResellerCreateController extends AbstractController
 {
-    /**
-     * @throws InvalidArgumentException
-     */
     #[Route('/api/auth/signup', name: 'app_create_reseller', methods: ['POST'])]
     public function __invoke(
         Request $request,
@@ -56,7 +53,6 @@ class ResellerCreateController extends AbstractController
             throw new UnprocessableEntityHttpException('My custom error message', null, 0, ['errors' => $jsonErrors]);
         }
         $resellerRepository->save($reseller, true);
-        $cache->invalidateTags(['customersCache']);
         return $this->json($reseller, Response::HTTP_CREATED, [], ['groups' => 'read:reseller']);
     }
 }

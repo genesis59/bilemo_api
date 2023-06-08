@@ -3,7 +3,6 @@
 namespace App\Controller\Customer;
 
 use App\Entity\Customer;
-use App\Entity\Reseller;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Psr\Cache\InvalidArgumentException;

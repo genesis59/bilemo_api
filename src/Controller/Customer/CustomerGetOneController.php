@@ -38,6 +38,7 @@ class CustomerGetOneController extends AbstractController
         $dataJson = $cache->get(
             $key,
             function (ItemInterface $item) use ($customer, $serializer) {
+                $item->expiresAfter(300);
                 return $serializer->serialize($customer, 'json', [
                     'groups' => 'read:customer'
                 ]);

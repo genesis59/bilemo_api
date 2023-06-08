@@ -30,7 +30,7 @@ class EntityNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        /** @var array<mixed> $data */
+        /** @var array<string,mixed> $data */
         $data = $this->normalizer->normalize($object, $format, $context);
         return [
             "_links" => $this->entityRouteGenerator->getAllEntityRoutesList($object),
