@@ -34,10 +34,12 @@ class CustomerGetOneController extends AbstractController
         if (!$customer) {
             throw new EntityNotFoundException();
         }
-        $key = "customer-" . $uuid;
+        $key = sprintf("customer-%s", $uuid);
         $dataJson = $cache->get(
             $key,
             function (ItemInterface $item) use ($customer, $serializer) {
+                $item->expiresAfter(random_int(0, 300) + 3300);
+
                 return $serializer->serialize($customer, 'json', [
                     'groups' => 'read:customer'
                 ]);

@@ -2,7 +2,6 @@
 
 namespace App\Controller\Smartphone;
 
-use App\Entity\Smartphone;
 use App\Paginator\PaginatorService;
 use App\Repository\SmartphoneRepository;
 use Psr\Cache\InvalidArgumentException;
@@ -10,12 +9,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SmartphoneGetAllController extends AbstractController
 {
@@ -27,37 +24,24 @@ class SmartphoneGetAllController extends AbstractController
         Request $request,
         SmartphoneRepository $smartphoneRepository,
         PaginatorService $paginatorService,
-        TranslatorInterface $translator,
         TagAwareCacheInterface $cache,
         SerializerInterface $serializer
     ): JsonResponse {
-        $page = $request->get('page', 1);
-        $limit = $request->get('limit', $this->getParameter('default_smartphone_per_page'));
-        $q = $request->get('q');
-        $data = $paginatorService->paginate(Smartphone::class, $page, $limit, $q);
-        if (count($data) === 0) {
-            throw new NotFoundHttpException(
-                $translator->trans('app.exception.not_found_http_exception_page'),
-                null,
-                0,
-                ['page' => true]
-            );
-        }
-        $infoPagination = $paginatorService->getInfoPagination(
-            $smartphoneRepository,
-            'app_get_smartphones',
-            $page,
-            $limit,
-            $q
+        $paginatorService->create($smartphoneRepository, $request, 'app_get_smartphones');
+        $key = sprintf(
+            "smartphones-%s-%s-%s",
+            $paginatorService->getCurrentPage(),
+            $paginatorService->getLimit(),
+            $paginatorService->getSearch()
         );
-        $key = "smartphones-" . $page . "-" . $limit . "-" . $q;
         $dataJson = $cache->get(
             $key,
-            function (ItemInterface $item) use ($data, $infoPagination, $serializer) {
+            function (ItemInterface $item) use ($paginatorService, $smartphoneRepository, $serializer) {
                 $item->tag('smartphonesCache');
-                return $serializer->serialize($data, 'json', [
+                $item->expiresAfter(random_int(0, 300) + 3300);
+                return $serializer->serialize($paginatorService, 'json', [
                     'groups' => 'read:smartphone',
-                    'pagination' => $infoPagination
+                    'repository' => $smartphoneRepository
                 ]);
             }
         );

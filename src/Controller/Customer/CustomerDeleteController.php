@@ -3,7 +3,6 @@
 namespace App\Controller\Customer;
 
 use App\Entity\Customer;
-use App\Entity\Reseller;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Psr\Cache\InvalidArgumentException;
@@ -34,7 +33,7 @@ class CustomerDeleteController extends AbstractController
         if ($customer == null) {
             throw new EntityNotFoundException();
         }
-        $cache->delete('customer-' . $uuid);
+        $cache->delete(sprintf("customer-%s", $uuid));
         $cache->invalidateTags(['customersCache']);
         $customerRepository->remove($customer, true);
         return $this->json(null, Response::HTTP_NO_CONTENT);

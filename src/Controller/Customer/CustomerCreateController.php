@@ -4,7 +4,6 @@ namespace App\Controller\Customer;
 
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
-use App\Repository\ResellerRepository;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,7 +29,6 @@ class CustomerCreateController extends AbstractController
     public function __invoke(
         Request $request,
         SerializerInterface $serializer,
-        ResellerRepository $resellerRepository,
         CustomerRepository $customerRepository,
         ValidatorInterface $validator,
         TranslatorInterface $translator,
@@ -58,11 +56,12 @@ class CustomerCreateController extends AbstractController
         }
         $customerRepository->save($customer, true);
 
-        $key = "customer-" . $customer->getUuid();
+        $key = sprintf("customer-%s", $customer->getUuid());
         $cache->invalidateTags(['customersCache']);
         $dataJson = $cache->get(
             $key,
             function (ItemInterface $item) use ($customer, $serializer) {
+                $item->expiresAfter(random_int(0, 300) + 3300);
                 echo 'Le client a bien été créé !' . PHP_EOL;
                 return $serializer->serialize($customer, 'json', [
                     'groups' => 'read:customer'
