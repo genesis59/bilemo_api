@@ -13,7 +13,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SmartphoneGetOneController extends AbstractController
 {
@@ -25,7 +24,6 @@ class SmartphoneGetOneController extends AbstractController
     public function __invoke(
         SmartphoneRepository $smartphoneRepository,
         string $uuid,
-        TranslatorInterface $translator,
         TagAwareCacheInterface $cache,
         SerializerInterface $serializer
     ): JsonResponse {
@@ -38,11 +36,11 @@ class SmartphoneGetOneController extends AbstractController
             throw new EntityNotFoundException();
         }
 
-        $key = "smartphone-" . $uuid;
+        $key = sprintf("smartphone-%s", $uuid);
         $dataJson = $cache->get(
             $key,
             function (ItemInterface $item) use ($smartphone, $serializer) {
-                $item->expiresAfter(300);
+                $item->expiresAfter(random_int(0, 300) + 3300);
                 return $serializer->serialize($smartphone, 'json', [
                     'groups' => 'read:smartphone'
                 ]);

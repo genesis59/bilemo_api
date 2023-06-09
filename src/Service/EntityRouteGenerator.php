@@ -50,7 +50,7 @@ class EntityRouteGenerator
             $routesList['self'] = $this->getSelfEntityRoute($entity, $routes['self']);
         }
         if (array_key_exists('create', $routes)) {
-            $routesList['create'] = $this->getCreateEntityRoute($entity, $routes['create']);
+            $routesList['create'] = $this->getCreateEntityRoute($routes['create']);
         }
         if (array_key_exists('update', $routes)) {
             $routesList['update'] = $this->getUpdateEntityRoute($entity, $routes['update']);
@@ -110,12 +110,10 @@ class EntityRouteGenerator
     }
 
     /**
-     * @template T
-     * @param T $entity
      * @param string $routeName
      * @return string
      */
-    public function getCreateEntityRoute($entity, string $routeName): string
+    public function getCreateEntityRoute(string $routeName): string
     {
             return $this->urlGenerator->generate(
                 $routeName

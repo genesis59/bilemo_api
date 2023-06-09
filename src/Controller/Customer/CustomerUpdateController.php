@@ -78,14 +78,14 @@ class CustomerUpdateController extends AbstractController
             throw new UnprocessableEntityHttpException('', null, 0, ['errors' => $jsonErrors]);
         }
         $managerRegistry->getManager()->flush();
-        $key = "customer-" . $uuid;
+        $key = sprintf("customer-%s", $uuid);
         $cache->delete($key);
         $cache->invalidateTags(['customersCache']);
         $dataJson = $cache->get(
             $key,
             function (ItemInterface $item) use ($customer, $serializer) {
                 echo 'Le client a bien été mis à jour !' . PHP_EOL;
-                $item->expiresAfter(300);
+                $item->expiresAfter(random_int(0, 300) + 3300);
                 return $serializer->serialize($customer, 'json', [
                     'groups' => 'read:customer'
                 ]);

@@ -37,7 +37,7 @@ class CustomerGetAllController extends AbstractController
         $dataJson = $cache->get(
             $key,
             function (ItemInterface $item) use ($paginatorService, $customerRepository, $serializer) {
-                $item->expiresAfter(300);
+                $item->expiresAfter(random_int(0, 300) + 3300);
                 $item->tag('customersCache');
                 return $serializer->serialize($paginatorService, 'json', [
                     'groups' => 'read:customer',
