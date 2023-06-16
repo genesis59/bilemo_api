@@ -33,17 +33,28 @@ class SmartphoneGetAllController extends AbstractController
             intval($request->get('limit', $this->getParameter('default_customer_per_page'))),
             $request->get('q', "")
         );
-        $dataJson = $cache->get(
-            $key,
-            function (ItemInterface $item) use ($paginatorService, $smartphoneRepository, $serializer, $request) {
-                $item->tag('smartphonesCache');
-                $item->expiresAfter(random_int(0, 300) + 3300);
-                $paginatorService->create($smartphoneRepository, $request, 'app_get_smartphones');
-                return $serializer->serialize($paginatorService, 'json', [
-                    'groups' => 'read:smartphone'
-                ]);
-            }
-        );
-        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
+
+        $data = apcu_fetch($key);
+        if (!$data) {
+            echo 'mise en cache';
+            $paginatorService->create($smartphoneRepository, $request, 'app_get_smartphones');
+            $data = $serializer->serialize($paginatorService, 'json', [
+                'groups' => 'read:smartphone'
+            ]);
+            apcu_add($key, $data);
+        }
+        return new JsonResponse($data, Response::HTTP_OK, [], true);
+//        $dataJson = $cache->get(
+//            $key,
+//            function (ItemInterface $item) use ($paginatorService, $smartphoneRepository, $serializer, $request) {
+//                $item->tag('smartphonesCache');
+//                $item->expiresAfter(random_int(0, 300) + 3300);
+//                $paginatorService->create($smartphoneRepository, $request, 'app_get_smartphones');
+//                return $serializer->serialize($paginatorService, 'json', [
+//                    'groups' => 'read:smartphone'
+//                ]);
+//            }
+//        );
+//        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
     }
 }

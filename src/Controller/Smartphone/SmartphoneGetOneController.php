@@ -33,19 +33,34 @@ class SmartphoneGetOneController extends AbstractController
         }
 
         $key = sprintf("smartphone-%s", $uuid);
-        $dataJson = $cache->get(
-            $key,
-            function (ItemInterface $item) use ($smartphoneRepository, $serializer, $uuid) {
-                $item->expiresAfter(random_int(0, 300) + 3300);
-                $smartphone = $smartphoneRepository->findOneBy(['uuid' => $uuid]);
-                if (!$smartphone) {
-                    throw new EntityNotFoundException();
-                }
-                return $serializer->serialize($smartphone, 'json', [
-                    'groups' => 'read:smartphone'
-                ]);
+
+        $data = apcu_fetch($key);
+        if (!$data) {
+            echo 'mise en cache';
+            $smartphone = $smartphoneRepository->findOneBy(['uuid' => $uuid]);
+            if (!$smartphone) {
+                throw new EntityNotFoundException();
             }
-        );
-        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
+
+            $data = $serializer->serialize($smartphone, 'json', [
+                'groups' => 'read:smartphone'
+            ]);
+            apcu_add($key, $data);
+        }
+        return new JsonResponse($data, Response::HTTP_OK, [], true);
+//        $dataJson = $cache->get(
+//            $key,
+//            function (ItemInterface $item) use ($smartphoneRepository, $serializer, $uuid) {
+//                $item->expiresAfter(random_int(0, 300) + 3300);
+//                $smartphone = $smartphoneRepository->findOneBy(['uuid' => $uuid]);
+//                if (!$smartphone) {
+//                    throw new EntityNotFoundException();
+//                }
+//                return $serializer->serialize($smartphone, 'json', [
+//                    'groups' => 'read:smartphone'
+//                ]);
+//            }
+//        );
+//        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
     }
 }
