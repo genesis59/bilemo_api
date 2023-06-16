@@ -27,7 +27,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class CustomerUpdateController extends AbstractController
 {
     /**
-     * @throws InvalidArgumentException
      * @throws EntityNotFoundException
      */
     #[Route('/api/customers/{uuid}', name: 'app_update_customer', methods: ['PUT'])]
@@ -79,18 +78,27 @@ class CustomerUpdateController extends AbstractController
         }
         $managerRegistry->getManager()->flush();
         $key = sprintf("customer-%s", $uuid);
-        $cache->delete($key);
-        $cache->invalidateTags(['customersCache']);
-        $dataJson = $cache->get(
-            $key,
-            function (ItemInterface $item) use ($customer, $serializer) {
-                echo 'Le client a bien été mis à jour !' . PHP_EOL;
-                $item->expiresAfter(random_int(0, 300) + 3300);
-                return $serializer->serialize($customer, 'json', [
-                    'groups' => 'read:customer'
-                ]);
-            }
-        );
-        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
+        apcu_delete($key);
+
+        $data = $serializer->serialize($customer, 'json', [
+            'groups' => 'read:customer'
+        ]);
+        apcu_clear_cache();
+        apcu_add($key, $data);
+        return new JsonResponse($data, Response::HTTP_OK, [], true);
+
+//        $cache->delete($key);
+//        $cache->invalidateTags(['customersCache']);
+//        $dataJson = $cache->get(
+//            $key,
+//            function (ItemInterface $item) use ($customer, $serializer) {
+//                echo 'Le client a bien été mis à jour !' . PHP_EOL;
+//                $item->expiresAfter(random_int(0, 300) + 3300);
+//                return $serializer->serialize($customer, 'json', [
+//                    'groups' => 'read:customer'
+//                ]);
+//            }
+//        );
+//        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
     }
 }

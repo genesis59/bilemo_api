@@ -30,21 +30,35 @@ class CustomerGetOneController extends AbstractController
         if (!Uuid::isValid($uuid)) {
             throw new EntityNotFoundException();
         }
-        $customer = $customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
-        if (!$customer) {
-            throw new EntityNotFoundException();
-        }
-        $key = sprintf("customer-%s", $uuid);
-        $dataJson = $cache->get(
-            $key,
-            function (ItemInterface $item) use ($customer, $serializer) {
-                $item->expiresAfter(random_int(0, 300) + 3300);
 
-                return $serializer->serialize($customer, 'json', [
-                    'groups' => 'read:customer'
-                ]);
+        $key = sprintf("customer-%s", $uuid);
+        $data = apcu_fetch($key);
+        if (!$data) {
+            $customer = $customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
+            if (!$customer) {
+                throw new EntityNotFoundException();
             }
-        );
-        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
+
+            $data = $serializer->serialize($customer, 'json', [
+                'groups' => 'read:customer'
+            ]);
+            apcu_add($key, $data);
+        }
+        return new JsonResponse($data, Response::HTTP_OK, [], true);
+//        $dataJson = $cache->get(
+//            $key,
+//            function (ItemInterface $item) use ($customerRepository, $serializer, $uuid) {
+//                $customer = $customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
+//                if (!$customer) {
+//                    throw new EntityNotFoundException();
+//                }
+//                $item->expiresAfter(random_int(0, 300) + 3300);
+//
+//                return $serializer->serialize($customer, 'json', [
+//                    'groups' => 'read:customer'
+//                ]);
+//            }
+//        );
+//        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
     }
 }

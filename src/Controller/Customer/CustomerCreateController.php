@@ -57,17 +57,23 @@ class CustomerCreateController extends AbstractController
         $customerRepository->save($customer, true);
 
         $key = sprintf("customer-%s", $customer->getUuid());
-        $cache->invalidateTags(['customersCache']);
-        $dataJson = $cache->get(
-            $key,
-            function (ItemInterface $item) use ($customer, $serializer) {
-                $item->expiresAfter(random_int(0, 300) + 3300);
-                echo 'Le client a bien été créé !' . PHP_EOL;
-                return $serializer->serialize($customer, 'json', [
-                    'groups' => 'read:customer'
-                ]);
-            }
-        );
-        return new JsonResponse($dataJson, Response::HTTP_CREATED, [], true);
+        $data = $serializer->serialize($customer, 'json', [
+            'groups' => 'read:customer'
+        ]);
+        apcu_add($key, $data);
+        apcu_clear_cache();
+        return new JsonResponse($data, Response::HTTP_CREATED, [], true);
+//        $cache->invalidateTags(['customersCache']);
+//        $dataJson = $cache->get(
+//            $key,
+//            function (ItemInterface $item) use ($customer, $serializer) {
+//                $item->expiresAfter(random_int(0, 300) + 3300);
+//                echo 'Le client a bien été créé !' . PHP_EOL;
+//                return $serializer->serialize($customer, 'json', [
+//                    'groups' => 'read:customer'
+//                ]);
+//            }
+//        );
+//        return new JsonResponse($dataJson, Response::HTTP_CREATED, [], true);
     }
 }

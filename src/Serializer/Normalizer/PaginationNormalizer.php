@@ -3,37 +3,22 @@
 namespace App\Serializer\Normalizer;
 
 use App\Paginator\PaginatorService;
-use App\Repository\CustomerRepository;
-use App\Repository\SmartphoneRepository;
 use App\Service\EntityRouteGenerator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Validator\Exception\BadMethodCallException;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PaginationNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
     /**
      * @param PaginatorService $paginatorService
-     * @param array<string,mixed> $context
      * @return array<string,mixed>
      */
     private function createPagination(
-        PaginatorService $paginatorService,
-        array $context
+        PaginatorService $paginatorService
     ): array {
-        $repository = $context['repository'];
-        if (
-            (!$repository instanceof SmartphoneRepository && !$repository instanceof CustomerRepository) ||
-            !method_exists($repository, "searchAndPaginate")
-        ) {
-            throw new BadMethodCallException(
-                $this->translator->trans('app.exception.bad_method_call_exception_searchAndPaginate')
-            );
-        }
         return [
             "current_page_number" => $paginatorService->getCurrentPage(),
             "number_items_per_page" => $paginatorService->getLimit(),
@@ -48,8 +33,7 @@ class PaginationNormalizer implements NormalizerInterface, CacheableSupportsMeth
     public function __construct(
         #[Autowire(service: ObjectNormalizer::class)]
         private readonly NormalizerInterface $normalizer,
-        private readonly EntityRouteGenerator $entityRouteGenerator,
-        private readonly TranslatorInterface $translator
+        private readonly EntityRouteGenerator $entityRouteGenerator
     ) {
     }
 
@@ -75,7 +59,7 @@ class PaginationNormalizer implements NormalizerInterface, CacheableSupportsMeth
             $items[] = $itemTransformed;
         }
         return [
-            '_pagination' => $this->createPagination($object, $context),
+            '_pagination' => $this->createPagination($object),
             'items' => $items
         ];
     }
@@ -88,10 +72,7 @@ class PaginationNormalizer implements NormalizerInterface, CacheableSupportsMeth
      */
     public function supportsNormalization($data, string $format = null, array $context = []): bool
     {
-        return $data instanceof PaginatorService && (
-            $context['repository'] instanceof CustomerRepository ||
-            $context['repository'] instanceof SmartphoneRepository
-            );
+        return $data instanceof PaginatorService;
     }
 
     public function hasCacheableSupportsMethod(): bool
