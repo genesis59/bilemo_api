@@ -30,14 +30,15 @@ class CustomerGetOneController extends AbstractController
         if (!Uuid::isValid($uuid)) {
             throw new EntityNotFoundException();
         }
-        $customer = $customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
-        if (!$customer) {
-            throw new EntityNotFoundException();
-        }
+
         $key = sprintf("customer-%s", $uuid);
         $dataJson = $cache->get(
             $key,
-            function (ItemInterface $item) use ($customer, $serializer) {
+            function (ItemInterface $item) use ($customerRepository, $serializer, $uuid) {
+                $customer = $customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
+                if (!$customer) {
+                    throw new EntityNotFoundException();
+                }
                 $item->expiresAfter(random_int(0, 300) + 3300);
 
                 return $serializer->serialize($customer, 'json', [

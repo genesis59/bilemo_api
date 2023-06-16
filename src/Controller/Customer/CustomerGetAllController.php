@@ -27,7 +27,6 @@ class CustomerGetAllController extends AbstractController
         SerializerInterface $serializer,
         TagAwareCacheInterface $cache
     ): JsonResponse {
-        $paginatorService->create($customerRepository, $request, 'app_get_customers');
         $key = sprintf(
             "customers-%s-%s-%s",
             $paginatorService->getCurrentPage(),
@@ -36,12 +35,12 @@ class CustomerGetAllController extends AbstractController
         );
         $dataJson = $cache->get(
             $key,
-            function (ItemInterface $item) use ($paginatorService, $customerRepository, $serializer) {
+            function (ItemInterface $item) use ($paginatorService, $customerRepository, $serializer, $request) {
+                $paginatorService->create($customerRepository, $request, 'app_get_customers');
                 $item->expiresAfter(random_int(0, 300) + 3300);
                 $item->tag('customersCache');
                 return $serializer->serialize($paginatorService, 'json', [
-                    'groups' => 'read:customer',
-                    'repository' => $customerRepository,
+                    'groups' => 'read:customer'
                 ]);
             }
         );

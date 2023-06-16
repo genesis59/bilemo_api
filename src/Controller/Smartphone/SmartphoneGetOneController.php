@@ -31,16 +31,16 @@ class SmartphoneGetOneController extends AbstractController
         if (!Uuid::isValid($uuid)) {
             throw new EntityNotFoundException();
         }
-        $smartphone = $smartphoneRepository->findOneBy(['uuid' => $uuid]);
-        if (!$smartphone) {
-            throw new EntityNotFoundException();
-        }
 
         $key = sprintf("smartphone-%s", $uuid);
         $dataJson = $cache->get(
             $key,
-            function (ItemInterface $item) use ($smartphone, $serializer) {
+            function (ItemInterface $item) use ($smartphoneRepository, $serializer, $uuid) {
                 $item->expiresAfter(random_int(0, 300) + 3300);
+                $smartphone = $smartphoneRepository->findOneBy(['uuid' => $uuid]);
+                if (!$smartphone) {
+                    throw new EntityNotFoundException();
+                }
                 return $serializer->serialize($smartphone, 'json', [
                     'groups' => 'read:smartphone'
                 ]);

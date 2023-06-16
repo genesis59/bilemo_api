@@ -27,21 +27,20 @@ class SmartphoneGetAllController extends AbstractController
         TagAwareCacheInterface $cache,
         SerializerInterface $serializer
     ): JsonResponse {
-        $paginatorService->create($smartphoneRepository, $request, 'app_get_smartphones');
         $key = sprintf(
             "smartphones-%s-%s-%s",
-            $paginatorService->getCurrentPage(),
-            $paginatorService->getLimit(),
-            $paginatorService->getSearch()
+            intval($request->get('page', 1)),
+            intval($request->get('limit', $this->getParameter('default_customer_per_page'))),
+            $request->get('q', "")
         );
         $dataJson = $cache->get(
             $key,
-            function (ItemInterface $item) use ($paginatorService, $smartphoneRepository, $serializer) {
+            function (ItemInterface $item) use ($paginatorService, $smartphoneRepository, $serializer, $request) {
                 $item->tag('smartphonesCache');
                 $item->expiresAfter(random_int(0, 300) + 3300);
+                $paginatorService->create($smartphoneRepository, $request, 'app_get_smartphones');
                 return $serializer->serialize($paginatorService, 'json', [
-                    'groups' => 'read:smartphone',
-                    'repository' => $smartphoneRepository
+                    'groups' => 'read:smartphone'
                 ]);
             }
         );
