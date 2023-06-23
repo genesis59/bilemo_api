@@ -3,10 +3,13 @@
 namespace App\Controller\Smartphone;
 
 use App\Repository\SmartphoneRepository;
+use App\VersionManager\SmartphoneVersionManager;
 use Doctrine\ORM\EntityNotFoundException;
+use Exception;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -18,49 +21,45 @@ class SmartphoneGetOneController extends AbstractController
 {
     /**
      * @throws EntityNotFoundException
+     * @throws Exception
      * @throws InvalidArgumentException
      */
     #[Route('/api/smartphones/{uuid}', name: 'app_get_smartphone', methods: ['GET'])]
     public function __invoke(
+        Request $request,
         SmartphoneRepository $smartphoneRepository,
         string $uuid,
         TagAwareCacheInterface $cache,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        SmartphoneVersionManager $smartphoneVersionManager
     ): JsonResponse {
 
         if (!Uuid::isValid($uuid)) {
             throw new EntityNotFoundException();
         }
 
-        $key = sprintf("smartphone-%s", $uuid);
-
-        $data = apcu_fetch($key);
-        if (!$data) {
-            echo 'mise en cache';
-            $smartphone = $smartphoneRepository->findOneBy(['uuid' => $uuid]);
-            if (!$smartphone) {
-                throw new EntityNotFoundException();
+        $key = sprintf("smartphone-%s-%s", $uuid, $request->headers->get('groups', 'read:smartphone_vMax'));
+        $dataJson = $cache->get(
+            $key,
+            function (ItemInterface $item) use (
+                $smartphoneVersionManager,
+                $request,
+                $smartphoneRepository,
+                $serializer,
+                $uuid
+            ) {
+                $item->expiresAfter(random_int(0, 300) + 3300);
+                $smartphone = $smartphoneRepository->findOneBy(['uuid' => $uuid]);
+                if (!$smartphone) {
+                    throw new EntityNotFoundException();
+                }
+                $context = [
+                    'groups' => $request->headers->get('groups', 'read:smartphone_vMax')
+                ];
+                $smartphoneVersionManager->updateSmartphoneVersion($smartphone, $context);
+                return $serializer->serialize($smartphone, 'json', $context);
             }
-
-            $data = $serializer->serialize($smartphone, 'json', [
-                'groups' => 'read:smartphone'
-            ]);
-            apcu_add($key, $data);
-        }
-        return new JsonResponse($data, Response::HTTP_OK, [], true);
-//        $dataJson = $cache->get(
-//            $key,
-//            function (ItemInterface $item) use ($smartphoneRepository, $serializer, $uuid) {
-//                $item->expiresAfter(random_int(0, 300) + 3300);
-//                $smartphone = $smartphoneRepository->findOneBy(['uuid' => $uuid]);
-//                if (!$smartphone) {
-//                    throw new EntityNotFoundException();
-//                }
-//                return $serializer->serialize($smartphone, 'json', [
-//                    'groups' => 'read:smartphone'
-//                ]);
-//            }
-//        );
-//        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
+        );
+        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
     }
 }

@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Entity\Reseller;
 use App\Entity\Smartphone;
 use App\Service\EntityRouteGenerator;
+use App\VersionManager\SmartphoneVersionManager;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;

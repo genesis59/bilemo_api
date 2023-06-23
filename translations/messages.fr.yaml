@@ -15,6 +15,7 @@ app:
     entity_not_found_exception: La ressource demandée n'existe pas, uuid erroné
     internal_server_error: Une erreur interne est survenue. Veuillez réessayer plus tard ou contacter le support si le problème persiste.
     bad_method_call_exception_searchAndPaginate : Nous rencontrons un problème la méthode searchAndPaginate n'existe pas.
+    bad_version: "Veuillez renseigner une version valide, que vous pouvez spécifier à l'aide de l'attribut \"Accept\" dans l'en-tête de la requête (exemple de valeur : application/json; version=1.2). Les versions 1.0, 1.1 et 1.2 sont actuellement disponibles."
   constraint:
     customer:
       first_name:

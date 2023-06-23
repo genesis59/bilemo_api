@@ -4,6 +4,7 @@ namespace App\Controller\Customer;
 
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityNotFoundException;
+use Exception;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,6 +19,7 @@ class CustomerGetOneController extends AbstractController
 {
     /**
      * @throws EntityNotFoundException
+     * @throws Exception
      * @throws InvalidArgumentException
      */
     #[Route('/api/customers/{uuid}', name: 'app_get_customer', methods: ['GET'])]
@@ -32,33 +34,21 @@ class CustomerGetOneController extends AbstractController
         }
 
         $key = sprintf("customer-%s", $uuid);
-        $data = apcu_fetch($key);
-        if (!$data) {
-            $customer = $customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
-            if (!$customer) {
-                throw new EntityNotFoundException();
-            }
 
-            $data = $serializer->serialize($customer, 'json', [
-                'groups' => 'read:customer'
-            ]);
-            apcu_add($key, $data);
-        }
-        return new JsonResponse($data, Response::HTTP_OK, [], true);
-//        $dataJson = $cache->get(
-//            $key,
-//            function (ItemInterface $item) use ($customerRepository, $serializer, $uuid) {
-//                $customer = $customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
-//                if (!$customer) {
-//                    throw new EntityNotFoundException();
-//                }
-//                $item->expiresAfter(random_int(0, 300) + 3300);
-//
-//                return $serializer->serialize($customer, 'json', [
-//                    'groups' => 'read:customer'
-//                ]);
-//            }
-//        );
-//        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
+        $dataJson = $cache->get(
+            $key,
+            function (ItemInterface $item) use ($customerRepository, $serializer, $uuid) {
+                $customer = $customerRepository->findOneBy(['uuid' => $uuid, 'reseller' => $this->getUser()]);
+                if (!$customer) {
+                    throw new EntityNotFoundException();
+                }
+                $item->expiresAfter(random_int(0, 300) + 3300);
+
+                return $serializer->serialize($customer, 'json', [
+                    'groups' => 'read:customer'
+                ]);
+            }
+        );
+        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
     }
 }

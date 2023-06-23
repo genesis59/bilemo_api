@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ManagerRegistry;
+use Exception;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,6 +29,8 @@ class CustomerUpdateController extends AbstractController
 {
     /**
      * @throws EntityNotFoundException
+     * @throws Exception
+     * @throws InvalidArgumentException
      */
     #[Route('/api/customers/{uuid}', name: 'app_update_customer', methods: ['PUT'])]
     public function __invoke(
@@ -78,27 +81,19 @@ class CustomerUpdateController extends AbstractController
         }
         $managerRegistry->getManager()->flush();
         $key = sprintf("customer-%s", $uuid);
-        apcu_delete($key);
 
-        $data = $serializer->serialize($customer, 'json', [
-            'groups' => 'read:customer'
-        ]);
-        apcu_clear_cache();
-        apcu_add($key, $data);
-        return new JsonResponse($data, Response::HTTP_OK, [], true);
-
-//        $cache->delete($key);
-//        $cache->invalidateTags(['customersCache']);
-//        $dataJson = $cache->get(
-//            $key,
-//            function (ItemInterface $item) use ($customer, $serializer) {
-//                echo 'Le client a bien été mis à jour !' . PHP_EOL;
-//                $item->expiresAfter(random_int(0, 300) + 3300);
-//                return $serializer->serialize($customer, 'json', [
-//                    'groups' => 'read:customer'
-//                ]);
-//            }
-//        );
-//        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
+        $cache->delete($key);
+        $cache->invalidateTags(['customersCache']);
+        $dataJson = $cache->get(
+            $key,
+            function (ItemInterface $item) use ($customer, $serializer) {
+                echo 'Le client a bien été mis à jour !' . PHP_EOL;
+                $item->expiresAfter(random_int(0, 300) + 3300);
+                return $serializer->serialize($customer, 'json', [
+                    'groups' => 'read:customer'
+                ]);
+            }
+        );
+        return new JsonResponse($dataJson, Response::HTTP_OK, [], true);
     }
 }
