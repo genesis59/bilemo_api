@@ -5,7 +5,7 @@ namespace App\Paginator;
 use App\Entity\Smartphone;
 use App\Repository\CustomerRepository;
 use App\Repository\SmartphoneRepository;
-use App\VersionManager\SmartphoneVersionManager;
+use App\Versioning\ApiVersionManager;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,8 +32,7 @@ class PaginatorService
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly ParameterBagInterface $parameterBag,
-        private readonly SmartphoneVersionManager $smartphoneVersionManager
+        private readonly ParameterBagInterface $parameterBag
     ) {
     }
 
@@ -41,14 +40,12 @@ class PaginatorService
      * @param ServiceEntityRepositoryInterface $repository
      * @param Request $request
      * @param string $currentRoute
-     * @param array<string,string>|null $context
      * @return void
      */
     public function create(
         ServiceEntityRepositoryInterface $repository,
         Request $request,
-        string $currentRoute,
-        array $context = null
+        string $currentRoute
     ): void {
         $this->currentPage = intval($request->get('page', 1));
         $this->limit = intval($request->get('limit', $this->parameterBag->get('default_customer_per_page')));
@@ -77,13 +74,6 @@ class PaginatorService
             ($this->currentPage - 1) * $this->limit,
             $this->search
         );
-        if ($context) {
-            foreach ($this->data as $item) {
-                if ($item instanceof Smartphone) {
-                    $this->smartphoneVersionManager->updateSmartphoneVersion($item, $context);
-                }
-            }
-        }
         if (count($this->data) === 0) {
             throw new NotFoundHttpException(
                 $this->translator->trans('app.exception.not_found_http_exception_page'),
@@ -107,7 +97,7 @@ class PaginatorService
     public function getUrlLastPage(): string
     {
         return $this->urlGenerator->generate(
-            'app_get_customers',
+            $this->currentRoute,
             ['limit' => $this->limit, "page" => $this->lastPage]
         );
     }

@@ -1,6 +1,7 @@
 app:
   exception:
     not_normalizable_value_exception: Le type de cet attribut doit être du type %type%, %value% renseignée
+    unexpected_value_exception: Erreur lors de la conversion en JSON.
     not_null_constraint_violation_exception: Ce champ est obligatoire et doit être du type %type%, null donnée.
     method_not_allowed_http_exception: "La méthode %method% n'est pas autorisée pour la route %uri% (Autorisée(s): %allows%)."
     not_encodable_value_exception: Les données renseignées comportent une erreur de syntaxe.

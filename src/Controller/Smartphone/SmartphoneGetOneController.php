@@ -3,7 +3,7 @@
 namespace App\Controller\Smartphone;
 
 use App\Repository\SmartphoneRepository;
-use App\VersionManager\SmartphoneVersionManager;
+use App\Versioning\ApiVersionManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception;
 use Psr\Cache\InvalidArgumentException;
@@ -31,7 +31,7 @@ class SmartphoneGetOneController extends AbstractController
         string $uuid,
         TagAwareCacheInterface $cache,
         SerializerInterface $serializer,
-        SmartphoneVersionManager $smartphoneVersionManager
+        ApiVersionManager $smartphoneVersionManager
     ): JsonResponse {
 
         if (!Uuid::isValid($uuid)) {
@@ -42,7 +42,6 @@ class SmartphoneGetOneController extends AbstractController
         $dataJson = $cache->get(
             $key,
             function (ItemInterface $item) use (
-                $smartphoneVersionManager,
                 $request,
                 $smartphoneRepository,
                 $serializer,
@@ -56,7 +55,6 @@ class SmartphoneGetOneController extends AbstractController
                 $context = [
                     'groups' => $request->headers->get('groups', 'read:smartphone_vMax')
                 ];
-                $smartphoneVersionManager->updateSmartphoneVersion($smartphone, $context);
                 return $serializer->serialize($smartphone, 'json', $context);
             }
         );

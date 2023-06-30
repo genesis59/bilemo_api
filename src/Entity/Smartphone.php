@@ -191,14 +191,6 @@ class Smartphone
         return $this->price;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getPriceEuro(): ?string
-    {
-        return sprintf('%s €', $this->price) ;
-    }
-
     public function setPrice(string $price): self
     {
         $this->price = $price;

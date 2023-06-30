@@ -42,7 +42,7 @@ class SmartphoneGetAllController extends AbstractController
                 $context = [
                     'groups' => $request->headers->get('groups', 'read:smartphone_vMax')
                 ];
-                $paginatorService->create($smartphoneRepository, $request, 'app_get_smartphones', $context);
+                $paginatorService->create($smartphoneRepository, $request, 'app_get_smartphones');
                 return $serializer->serialize($paginatorService, 'json', $context);
             }
         );

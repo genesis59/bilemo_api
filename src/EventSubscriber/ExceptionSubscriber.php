@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Serializer\Exception\PartialDenormalizationException;
+use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Exception\BadMethodCallException;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -109,6 +110,17 @@ class ExceptionSubscriber implements EventSubscriberInterface
             ));
         }
 
+        if ($exception instanceof UnexpectedValueException) {
+            $message = $this->translator->trans('app.exception.unexpected_value_exception');
+            $event->setResponse(new JsonResponse(
+                $this->serializer->serialize([
+                    'message' => $message
+                ], 'json'),
+                Response::HTTP_BAD_REQUEST,
+                [],
+                true
+            ));
+        }
         if ($exception instanceof PartialDenormalizationException) {
             $messages = [];
             /** @var NotNormalizableValueException $e */
