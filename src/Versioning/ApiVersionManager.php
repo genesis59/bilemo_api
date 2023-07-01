@@ -20,8 +20,8 @@ class ApiVersionManager
         }
         if (is_array($this->parameterBag->get('api_versions'))) {
             $versionsList = array_reverse($this->parameterBag->get('api_versions'));
-            if (!$versionsList[$version]) {
-                throw new BadRequestHttpException('app.exception.bad_version');
+            if (!array_key_exists($version, $versionsList)) {
+                throw new BadRequestHttpException();
             }
 
             foreach ($versionsList as $key => $className) {
