@@ -90,7 +90,8 @@ class CustomerUpdateController extends AbstractController
                 echo 'Le client a bien été mis à jour !' . PHP_EOL;
                 $item->expiresAfter(random_int(0, 300) + 3300);
                 return $serializer->serialize($customer, 'json', [
-                    'groups' => 'read:customer'
+                    'groups' => 'read:customer',
+                    'type' => Customer::class
                 ]);
             }
         );

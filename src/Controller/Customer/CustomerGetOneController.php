@@ -2,6 +2,7 @@
 
 namespace App\Controller\Customer;
 
+use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Exception;
@@ -45,7 +46,8 @@ class CustomerGetOneController extends AbstractController
                 $item->expiresAfter(random_int(0, 300) + 3300);
 
                 return $serializer->serialize($customer, 'json', [
-                    'groups' => 'read:customer'
+                    'groups' => 'read:customer',
+                    'type' => Customer::class
                 ]);
             }
         );

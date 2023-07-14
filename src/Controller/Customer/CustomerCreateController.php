@@ -67,7 +67,8 @@ class CustomerCreateController extends AbstractController
                 $item->expiresAfter(random_int(0, 300) + 3300);
                 echo 'Le client a bien été créé !' . PHP_EOL;
                 return $serializer->serialize($customer, 'json', [
-                    'groups' => 'read:customer'
+                    'groups' => 'read:customer',
+                    'type' => Customer::class
                 ]);
             }
         );
