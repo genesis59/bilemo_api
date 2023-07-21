@@ -4,8 +4,6 @@ namespace App\Versioning;
 
 use App\Entity\Customer;
 use App\Entity\Smartphone;
-use App\Versioning\Transformer\ApiTransformer11To10;
-use App\Versioning\Transformer\ApiTransformer12To11;
 use App\Versioning\Transformer\ApiTransformerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -14,22 +12,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ApiTransformer
 {
-    /**
-     * Retourne le transformateur correspondant au nom de classe fourni
-     * @param string $className
-     * @return ApiTransformerInterface|null
-     */
-    private function getTransformer(string $className): ?ApiTransformerInterface
-    {
-        if ($className === ApiTransformer12To11::class) {
-            return $this->apiTransformer12To11;
-        }
-        if ($className === ApiTransformer11To10::class) {
-            return $this->apiTransformer11To10;
-        }
-        return null;
-    }
-
     /**
      * Gère la transformation des entités en cas de pagination ou non
      */
@@ -70,8 +52,6 @@ class ApiTransformer
     public function __construct(
         private readonly ParameterBagInterface $parameterBag,
         private readonly TranslatorInterface $translator,
-        private readonly ApiTransformer12To11 $apiTransformer12To11,
-        private readonly ApiTransformer11To10 $apiTransformer11To10
     ) {
     }
 
@@ -83,7 +63,6 @@ class ApiTransformer
         if ($this->parameterBag->get('last_api_version') === $version) {
             return $data;
         }
-
         if (is_array($this->parameterBag->get('api_versions'))) {
             $versionsList = array_reverse($this->parameterBag->get('api_versions'));
             // Vérification de la véracité de la version
@@ -92,8 +71,11 @@ class ApiTransformer
             }
             // Résolution des versions antérieures
             foreach ($versionsList as $key => $className) {
-                $transformer = $this->getTransformer($className);
-                if (!$transformer) {
+                if (!class_exists($className)) {
+                    throw new BadRequestHttpException($this->translator->trans('app.exception.no_transformer'));
+                }
+                $transformer = new $className();
+                if (!$transformer instanceof ApiTransformerInterface) {
                     throw new BadRequestHttpException($this->translator->trans('app.exception.no_transformer'));
                 }
                 $data = $this->transformData($data, $transformer);
