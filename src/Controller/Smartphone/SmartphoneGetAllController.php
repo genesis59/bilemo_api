@@ -2,9 +2,11 @@
 
 namespace App\Controller\Smartphone;
 
+use App\Entity\Smartphone;
 use App\Paginator\PaginatorService;
 use App\Repository\SmartphoneRepository;
 use Exception;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,6 +20,7 @@ class SmartphoneGetAllController extends AbstractController
 {
     /**
      * @throws Exception
+     * @throws InvalidArgumentException
      */
     #[Route('/api/smartphones', name: 'app_get_smartphones', methods: ['GET'])]
     public function __invoke(
@@ -28,11 +31,10 @@ class SmartphoneGetAllController extends AbstractController
         SerializerInterface $serializer
     ): JsonResponse {
         $key = sprintf(
-            "smartphones-%s-%s-%s-%s",
+            "smartphones-%s-%s-%s",
             intval($request->get('page', 1)),
             intval($request->get('limit', $this->getParameter('default_customer_per_page'))),
-            $request->get('q', ""),
-            $request->headers->get('groups', 'read:smartphone_vMax')
+            $request->get('q', "")
         );
         $dataJson = $cache->get(
             $key,
@@ -40,7 +42,8 @@ class SmartphoneGetAllController extends AbstractController
                 $item->tag('smartphonesCache');
                 $item->expiresAfter(random_int(0, 300) + 3300);
                 $context = [
-                    'groups' => $request->headers->get('groups', 'read:smartphone_vMax')
+                    'groups' => 'read:smartphone',
+                    'type' => Smartphone::class
                 ];
                 $paginatorService->create($smartphoneRepository, $request, 'app_get_smartphones');
                 return $serializer->serialize($paginatorService, 'json', $context);

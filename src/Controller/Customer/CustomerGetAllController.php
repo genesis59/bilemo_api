@@ -2,6 +2,7 @@
 
 namespace App\Controller\Customer;
 
+use App\Entity\Customer;
 use App\Paginator\PaginatorService;
 use App\Repository\CustomerRepository;
 use Exception;
@@ -45,7 +46,8 @@ class CustomerGetAllController extends AbstractController
                 $item->expiresAfter(random_int(0, 300) + 3300);
                 $item->tag('customersCache');
                 return $serializer->serialize($paginatorService, 'json', [
-                    'groups' => 'read:customer'
+                    'groups' => 'read:customer',
+                    'type' => Customer::class
                 ]);
             }
         );

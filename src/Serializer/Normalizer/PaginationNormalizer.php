@@ -5,7 +5,7 @@ namespace App\Serializer\Normalizer;
 use App\Entity\Smartphone;
 use App\Paginator\PaginatorService;
 use App\Service\EntityRouteGenerator;
-use App\Versioning\ApiVersionManager;
+use App\Versioning\ApiTransformer;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
@@ -52,11 +52,13 @@ class PaginationNormalizer implements NormalizerInterface, CacheableSupportsMeth
         foreach ($object->getData() as $item) {
             /** @var array<string,mixed> $itemNormalized */
             $itemNormalized = $this->normalizer->normalize($item, null, [
-                'groups' => $context['groups']
+                'groups' => $context['groups'],
+                "type" => $context['type']
             ]);
             $itemTransformed = [
                 "_links" => $this->entityRouteGenerator->getAllEntityRoutesList($item),
-                ...$itemNormalized
+                ...$itemNormalized,
+                "_type" => $context['type']
             ];
             $items[] = $itemTransformed;
         }

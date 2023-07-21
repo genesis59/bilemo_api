@@ -6,7 +6,7 @@ use App\Entity\Customer;
 use App\Entity\Reseller;
 use App\Entity\Smartphone;
 use App\Service\EntityRouteGenerator;
-use App\Versioning\ApiVersionManager;
+use App\Versioning\ApiTransformer;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;
@@ -35,7 +35,8 @@ class EntityNormalizer implements NormalizerInterface, CacheableSupportsMethodIn
         $data = $this->normalizer->normalize($object, $format, $context);
         return [
             "_links" => $this->entityRouteGenerator->getAllEntityRoutesList($object),
-            ...$data
+            ...$data,
+            "_type" => $context['type']
         ];
     }
 
