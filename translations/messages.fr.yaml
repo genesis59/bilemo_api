@@ -17,6 +17,7 @@ app:
     internal_server_error: Une erreur interne est survenue. Veuillez réessayer plus tard ou contacter le support si le problème persiste.
     bad_method_call_exception_searchAndPaginate : Nous rencontrons un problème la méthode searchAndPaginate n'existe pas.
     bad_version: "Veuillez renseigner une version valide, que vous pouvez spécifier à l'aide de l'attribut \"api-version\" dans l'en-tête de la requête (exemple de valeur : 1.1). Les versions 1.0, 1.1 et 1.2 sont actuellement disponibles."
+    no_transformer: Un problème technique est survenu lors de la transformation de la version. Veuillez contacter le service technique.
   constraint:
     customer:
       first_name:

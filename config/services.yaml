@@ -8,8 +8,8 @@ parameters:
   default_customer_per_page: 10
   last_api_version: "1.2"
   api_versions:
-    "1.0": transformFrom11To10
-    "1.1": transformFrom12To11
+    "1.0": App\Versioning\Transformer\ApiTransformer11To10
+    "1.1": App\Versioning\Transformer\ApiTransformer12To11
 
 services:
     # default configuration for services in *this* file
