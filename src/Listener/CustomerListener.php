@@ -11,9 +11,10 @@ use Symfony\Component\Uid\Uuid;
 class CustomerListener
 {
     public function __construct(
-        private readonly Security $security
+        private readonly Security $security,
     ) {
     }
+
     public function prePersist(Customer $customer, LifecycleEventArgs $args): void
     {
         if ($this->security->getUser()) {

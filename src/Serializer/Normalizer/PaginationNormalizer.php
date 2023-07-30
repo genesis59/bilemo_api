@@ -2,10 +2,8 @@
 
 namespace App\Serializer\Normalizer;
 
-use App\Entity\Smartphone;
 use App\Paginator\PaginatorService;
-use App\Service\EntityRouteGenerator;
-use App\Versioning\ApiTransformer;
+use App\RouteGenerator\EntityRouteGenerator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\Normalizer\CacheableSupportsMethodInterface;

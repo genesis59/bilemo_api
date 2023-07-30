@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\RouteGenerator;
 
 use App\Entity\Customer;
 use App\Entity\Reseller;

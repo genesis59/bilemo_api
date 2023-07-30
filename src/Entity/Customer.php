@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Attribute\SensibleData;
 use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -43,6 +44,7 @@ class Customer
         pattern: '/^[a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s\'-]+$/i',
         message: 'app.constraint.customer.first_name.regex'
     )]
+    #[SensibleData]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
@@ -58,6 +60,7 @@ class Customer
         pattern: '/^[a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ\s\'-]+$/i',
         message: 'app.constraint.customer.last_name.regex'
     )]
+    #[SensibleData]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255)]
@@ -65,6 +68,7 @@ class Customer
     #[Assert\Email(message: 'app.constraint.customer.email.email')]
     #[Assert\Length(max:255, maxMessage: 'app.constraint.customer.email.length_max_message')]
     #[Groups(['read:customer','update:customer','post:customer'])]
+    #[SensibleData]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
