@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
@@ -57,6 +58,27 @@ class ExceptionSubscriber implements EventSubscriberInterface
         }
 
         $exception = $event->getThrowable();
+
+        if ($exception instanceof HttpException) {
+            $message = $exception->getMessage();
+            if (!$event->getRequest()->getContent()) {
+                $message = $this->translator->trans('app.exception.bad_request_http_exception_body_no_empty');
+            }
+            if ($message) {
+                $keys = explode("\n", trim($message));
+                $translations = array_map(fn($key) => $this->translator->trans($key), $keys);
+                $message = implode(', ', $translations);
+                $message .= '.';
+            }
+            $event->setResponse(new JsonResponse(
+                $this->serializer->serialize([
+                    'message' => $this->translator->trans($message)
+                ], 'json'),
+                $exception->getStatusCode(),
+                [],
+                true
+            ));
+        }
 
         if ($exception instanceof NotEncodableValueException) {
             $event->setResponse(new JsonResponse(

@@ -43,7 +43,7 @@ class ResellerCreateController extends AbstractController
             foreach ($errors as $error) {
                 $jsonErrors[$error->getPropertyPath()] = $translator->trans($error->getMessageTemplate());
             }
-            throw new UnprocessableEntityHttpException('My custom error message', null, 0, ['errors' => $jsonErrors]);
+            throw new UnprocessableEntityHttpException('', null, 0, ['errors' => $jsonErrors]);
         }
         $resellerRepository->save($reseller, true);
         return $this->json($reseller, Response::HTTP_CREATED, [], ['groups' => 'read:reseller']);

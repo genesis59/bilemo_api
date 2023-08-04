@@ -2,6 +2,7 @@
 
 namespace App\Controller\Customer;
 
+use App\DTO\CustomerDto;
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use Exception;
@@ -10,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -34,18 +36,14 @@ class CustomerCreateController extends AbstractController
         CustomerRepository $customerRepository,
         ValidatorInterface $validator,
         TranslatorInterface $translator,
-        TagAwareCacheInterface $cache
+        TagAwareCacheInterface $cache,
+        #[MapRequestPayload] CustomerDto $customerDto
     ): JsonResponse {
-
-        if ($request->getContent() === "") {
-            throw new BadRequestHttpException();
-        }
         /** @var Customer $customer */
         $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json', [
             DenormalizerInterface::COLLECT_DENORMALIZATION_ERRORS => true,
             'groups' => 'post:customer'
         ]);
-
         $errors = $validator->validate($customer);
         if ($errors->count() > 0) {
             $jsonErrors = [];
@@ -53,8 +51,7 @@ class CustomerCreateController extends AbstractController
             foreach ($errors as $error) {
                 $jsonErrors[$error->getPropertyPath()] = $translator->trans($error->getMessageTemplate());
             }
-
-            throw new UnprocessableEntityHttpException('My custom error message', null, 0, ['errors' => $jsonErrors]);
+            throw new UnprocessableEntityHttpException('', null, 0, ['errors' => $jsonErrors]);
         }
         $customerRepository->save($customer, true);
 
