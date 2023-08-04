@@ -11,7 +11,6 @@ parameters:
     "1.0": App\Versioning\Transformer\ApiTransformer11To10
     "1.1": App\Versioning\Transformer\ApiTransformer12To11
   sodium_key: '%env(resolve:SODIUM_KEY)%'
-  fixtures_loading: false
 
 services:
     # default configuration for services in *this* file

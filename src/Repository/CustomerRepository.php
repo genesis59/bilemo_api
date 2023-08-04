@@ -17,8 +17,10 @@ use Symfony\Bundle\SecurityBundle\Security;
  */
 class CustomerRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry, private readonly Security $security)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly Security $security
+    ) {
         parent::__construct($registry, Customer::class);
     }
 
@@ -69,12 +71,13 @@ class CustomerRepository extends ServiceEntityRepository
      */
     public function getSimilarEmailForReseller(array $args): array
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.email = :email')
-            ->andWhere('c.reseller = :reseller')
-            ->setParameter(':email', $args['email'])
-            ->setParameter(':reseller', $this->security->getUser())
-            ->getQuery()->getResult();
+        $customers = $this->findBy(["reseller" => $this->security->getUser()]);
+        foreach ($customers as $customer) {
+            if ($customer->getEmail() === $args['email']) {
+                return [$customer];
+            }
+        }
+        return [];
     }
 
 

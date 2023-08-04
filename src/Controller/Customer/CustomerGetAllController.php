@@ -30,14 +30,12 @@ class CustomerGetAllController extends AbstractController
         SerializerInterface $serializer,
         TagAwareCacheInterface $cache,
     ): JsonResponse {
-
         $key = sprintf(
             "customers-%s-%s-%s",
             intval($request->get('page', 1)),
             intval($request->get('limit', $this->getParameter('default_customer_per_page'))),
             $request->get('q', "")
         );
-
         $dataJson = $cache->get(
             $key,
             function (ItemInterface $item) use ($paginatorService, $customerRepository, $serializer, $request) {

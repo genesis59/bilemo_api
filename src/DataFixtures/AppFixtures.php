@@ -19,6 +19,7 @@ use App\Factory\ScreenFactory;
 use App\Factory\SmartphoneFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Zenstruck\Foundry\Proxy;
 
 class AppFixtures extends Fixture
@@ -60,10 +61,9 @@ class AppFixtures extends Fixture
         PictureFactory::createMany(50);
         ResellerFactory::createMany(5);
         CustomerFactory::createMany(200);
-
         /** @var Proxy $customerProxy */
         foreach (CustomerFactory::all() as $customerProxy) {
-
+            $customerProxy->disableAutoRefresh();
             /** @var Customer $customer */
             $customer = $customerProxy->object();
 

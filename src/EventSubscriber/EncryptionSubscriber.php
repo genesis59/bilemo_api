@@ -11,7 +11,6 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use ReflectionClass;
 use ReflectionException;
 use SodiumException;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class EncryptionSubscriber implements EventSubscriberInterface
 {
@@ -31,10 +30,9 @@ class EncryptionSubscriber implements EventSubscriberInterface
             }
         }
     }
-    public function __construct(
-        private readonly EncryptionService $encryptionService,
-        private readonly ParameterBagInterface $parameterBag
-    ) {
+
+    public function __construct(private readonly EncryptionService $encryptionService)
+    {
     }
 
     /**
@@ -55,11 +53,9 @@ class EncryptionSubscriber implements EventSubscriberInterface
      */
     public function preUpdate(LifecycleEventArgs $args): void
     {
-        if (!$this->parameterBag->get('fixtures_loading')) {
-            $entity = $args->getObject();
-            if ($entity instanceof Customer) {
-                $this->cryptographicTransform($entity, EncryptionService::ENCRYPT_METHOD_NAME);
-            }
+        $entity = $args->getObject();
+        if ($entity instanceof Customer) {
+            $this->cryptographicTransform($entity, EncryptionService::ENCRYPT_METHOD_NAME);
         }
     }
 
@@ -69,11 +65,9 @@ class EncryptionSubscriber implements EventSubscriberInterface
      */
     public function postLoad(LifecycleEventArgs $args): void
     {
-        if (!$this->parameterBag->get('fixtures_loading')) {
-            $entity = $args->getObject();
-            if ($entity instanceof Customer) {
-                $this->cryptographicTransform($entity, EncryptionService::DECRYPT_METHOD_NAME);
-            }
+        $entity = $args->getObject();
+        if ($entity instanceof Customer) {
+            $this->cryptographicTransform($entity, EncryptionService::DECRYPT_METHOD_NAME);
         }
     }
 
@@ -83,11 +77,9 @@ class EncryptionSubscriber implements EventSubscriberInterface
      */
     public function postPersist(LifecycleEventArgs $args): void
     {
-        if (!$this->parameterBag->get('fixtures_loading')) {
-            $entity = $args->getObject();
-            if ($entity instanceof Customer) {
-                $this->cryptographicTransform($entity, EncryptionService::DECRYPT_METHOD_NAME);
-            }
+        $entity = $args->getObject();
+        if ($entity instanceof Customer) {
+            $this->cryptographicTransform($entity, EncryptionService::DECRYPT_METHOD_NAME);
         }
     }
 
@@ -97,13 +89,12 @@ class EncryptionSubscriber implements EventSubscriberInterface
      */
     public function postUpdate(LifecycleEventArgs $args): void
     {
-        if (!$this->parameterBag->get('fixtures_loading')) {
-            $entity = $args->getObject();
-            if ($entity instanceof Customer) {
-                $this->cryptographicTransform($entity, EncryptionService::DECRYPT_METHOD_NAME);
-            }
+        $entity = $args->getObject();
+        if ($entity instanceof Customer) {
+            $this->cryptographicTransform($entity, EncryptionService::DECRYPT_METHOD_NAME);
         }
     }
+
     public function getSubscribedEvents(): array
     {
         return [
