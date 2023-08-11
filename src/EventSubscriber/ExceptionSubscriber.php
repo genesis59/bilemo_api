@@ -60,8 +60,12 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $exception = $event->getThrowable();
 
         if ($exception instanceof HttpException) {
+            dump($exception);
             $message = $exception->getMessage();
-            if (!$event->getRequest()->getContent()) {
+            if (
+                !$event->getRequest()->getContent() &&
+                ($event->getRequest()->getMethod() === "POST" || $event->getRequest()->getMethod() === "PUT")
+            ) {
                 $message = $this->translator->trans('app.exception.bad_request_http_exception_body_no_empty');
             }
             if ($message) {
