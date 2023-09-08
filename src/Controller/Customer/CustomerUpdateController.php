@@ -8,6 +8,7 @@ use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ManagerRegistry;
 use Exception;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,6 +27,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use OpenApi\Attributes as OA;
 
 class CustomerUpdateController extends AbstractController
 {
@@ -34,6 +36,91 @@ class CustomerUpdateController extends AbstractController
      * @throws Exception
      * @throws InvalidArgumentException
      */
+    #[OA\Response(
+        response: 200,
+        description: 'Modification réussie',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(
+                properties: [
+                    new OA\Property(
+                        property: '_links',
+                        properties: [
+                            new OA\Property(
+                                property: 'self',
+                                type: 'string',
+                                readOnly: true
+                            ),
+                            new OA\Property(
+                                property: 'create',
+                                type: 'string',
+                                readOnly: true
+                            ),
+                            new OA\Property(
+                                property: 'update',
+                                type: 'string',
+                                readOnly: true
+                            ),
+                            new OA\Property(
+                                property: 'delete',
+                                type: 'string',
+                                readOnly: true
+                            )
+                        ]
+                    ),
+                    new OA\Property(
+                        property: null,
+                        ref: new Model(type: Customer::class, groups: ['read:customer']),
+                        type: 'object'
+                    ),
+                    new OA\Property(
+                        property: '_type',
+                        type: 'string',
+                        default: Customer::class
+                    ),
+                ],
+                type: 'object',
+            )
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Identifiants erronés',
+        content: new OA\JsonContent(
+            ref: '#/components/schemas/InvalidCredentials',
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Mauvaise requête',
+        content: new OA\JsonContent(
+            ref: '#/components/schemas/BadRequest',
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Ces données n\'existe pas',
+        content: new OA\JsonContent(
+            ref: '#/components/schemas/UnprocessableEntity',
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Format d\'envoi non reconnu',
+        content: new OA\JsonContent(
+            ref: '#/components/schemas/NotFound',
+            type: 'object'
+        )
+    )]
+    #[OA\Put(
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(ref: new Model(type: CustomerDto::class))
+        )
+    )]
+    #[OA\Tag(name: 'Customer')]
     #[Route('/api/customers/{uuid}', name: 'app_update_customer', methods: ['PUT'])]
     public function __invoke(
         Request $request,

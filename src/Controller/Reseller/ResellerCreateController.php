@@ -2,12 +2,14 @@
 
 namespace App\Controller\Reseller;
 
+use App\DTO\ResellerDto;
 use App\Entity\Reseller;
 use App\Repository\ResellerRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +27,8 @@ class ResellerCreateController extends AbstractController
         SerializerInterface $serializer,
         ResellerRepository $resellerRepository,
         ValidatorInterface $validator,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        #[MapRequestPayload] ResellerDto $resellerDto
     ): JsonResponse {
 
         if ($request->getContent() === "") {
@@ -46,6 +49,9 @@ class ResellerCreateController extends AbstractController
             throw new UnprocessableEntityHttpException('', null, 0, ['errors' => $jsonErrors]);
         }
         $resellerRepository->save($reseller, true);
-        return $this->json($reseller, Response::HTTP_CREATED, [], ['groups' => 'read:reseller']);
+        return $this->json($reseller, Response::HTTP_CREATED, [], [
+            'groups' => 'read:reseller',
+            'type' => Reseller::class
+        ]);
     }
 }

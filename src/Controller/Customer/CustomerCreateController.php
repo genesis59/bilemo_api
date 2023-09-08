@@ -6,6 +6,7 @@ use App\DTO\CustomerDto;
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use Exception;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,6 +23,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use OpenApi\Attributes as OA;
 
 class CustomerCreateController extends AbstractController
 {
@@ -30,6 +32,83 @@ class CustomerCreateController extends AbstractController
      * @throws InvalidArgumentException
      */
     #[Route('/api/customers', name: 'app_create_customer', methods: ['POST'])]
+    #[OA\Response(
+        response: 204,
+        description: 'Création réussie',
+        content: new OA\JsonContent(
+            type: 'array',
+            items: new OA\Items(
+                properties: [
+                    new OA\Property(
+                        property: '_links',
+                        properties: [
+                            new OA\Property(
+                                property: 'self',
+                                type: 'string',
+                                readOnly: true
+                            ),
+                            new OA\Property(
+                                property: 'create',
+                                type: 'string',
+                                readOnly: true
+                            ),
+                            new OA\Property(
+                                property: 'update',
+                                type: 'string',
+                                readOnly: true
+                            ),
+                            new OA\Property(
+                                property: 'delete',
+                                type: 'string',
+                                readOnly: true
+                            )
+                        ]
+                    ),
+                    new OA\Property(
+                        property: null,
+                        ref: new Model(type: Customer::class, groups: ['read:customer']),
+                        type: 'object'
+                    ),
+                    new OA\Property(
+                        property: '_type',
+                        type: 'string',
+                        default: Customer::class
+                    ),
+                ],
+                type: 'object',
+            )
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Identifiants erronés',
+        content: new OA\JsonContent(
+            ref: '#/components/schemas/InvalidCredentials',
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Mauvaise requête',
+        content: new OA\JsonContent(
+            ref: '#/components/schemas/BadRequest',
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Format d\'envoi non reconnu',
+        content: new OA\JsonContent(
+            ref: '#/components/schemas/NotFound',
+            type: 'object'
+        )
+    )]
+    #[OA\Post(
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(ref: new Model(type: CustomerDto::class))
+        )
+    )]
+    #[OA\Tag(name: 'Customer')]
     public function __invoke(
         Request $request,
         SerializerInterface $serializer,
@@ -62,7 +141,6 @@ class CustomerCreateController extends AbstractController
             $key,
             function (ItemInterface $item) use ($customer, $serializer) {
                 $item->expiresAfter(random_int(0, 300) + 3300);
-                echo 'Le client a bien été créé !' . PHP_EOL;
                 return $serializer->serialize($customer, 'json', [
                     'groups' => 'read:customer',
                     'type' => Customer::class

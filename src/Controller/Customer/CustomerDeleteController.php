@@ -12,13 +12,35 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use OpenApi\Attributes as OA;
 
+#[OA\Tag(name: 'Customer')]
 class CustomerDeleteController extends AbstractController
 {
     /**
      * @throws EntityNotFoundException
      * @throws InvalidArgumentException
      */
+    #[OA\Response(
+        response: 204,
+        description: 'Suppression réussie'
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Identifiants erronés',
+        content: new OA\JsonContent(
+            ref: '#/components/schemas/InvalidCredentials',
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 404,
+        description: 'Ces données n\'existe pas',
+        content: new OA\JsonContent(
+            ref: '#/components/schemas/NotFound',
+            type: 'object'
+        )
+    )]
     #[Route('/api/customers/{uuid}', name: 'app_delete_customer', methods: ['DELETE'])]
     public function __invoke(
         CustomerRepository $customerRepository,
