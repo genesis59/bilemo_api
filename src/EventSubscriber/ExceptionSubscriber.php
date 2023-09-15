@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Serializer\Exception\PartialDenormalizationException;
@@ -43,7 +44,10 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function processException(ExceptionEvent $event): void
     {
         /** check that the content is what is expected  */
-        if ($event->getRequest()->getMethod() === "POST" || $event->getRequest()->getMethod() === "PUT") {
+        if (
+            ($event->getRequest()->getMethod() === "POST" || $event->getRequest()->getMethod() === "PUT") &&
+            !$event->getThrowable() instanceof MethodNotAllowedHttpException
+        ) {
             if ($event->getRequest()->getContentTypeFormat() !== 'json') {
                 $event->setResponse(new JsonResponse(
                     $this->serializer->serialize([
@@ -75,6 +79,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
             }
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([
+                    'code' => $exception->getStatusCode(),
                     'message' => $this->translator->trans($message)
                 ], 'json'),
                 $exception->getStatusCode(),
@@ -123,6 +128,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         if ($exception instanceof MethodNotAllowedHttpException) {
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([
+                    'code' => $exception->getStatusCode(),
                     'message' => $this->translator->trans('app.exception.method_not_allowed_http_exception', [
                         "%method%" => $event->getRequest()->getMethod(),
                         "%uri%" => $event->getRequest()->getUri(),
@@ -139,6 +145,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
             $message = $this->translator->trans('app.exception.unexpected_value_exception');
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([
+                    'code' => $exception,
                     'message' => $message
                 ], 'json'),
                 Response::HTTP_BAD_REQUEST,
@@ -192,6 +199,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
             }
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([
+                    'code' => $exception->getStatusCode(),
                     'message' => $message
                 ], 'json'),
                 Response::HTTP_BAD_REQUEST,
@@ -219,6 +227,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
             }
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([
+                    'code' => $exception->getStatusCode(),
                     'message' => $message
                 ], 'json'),
                 Response::HTTP_NOT_FOUND,
@@ -231,6 +240,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         if ($exception instanceof EntityNotFoundException) {
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([
+                    'code' => $exception->getCode(),
                     'message' => $this->translator->trans('app.exception.entity_not_found_exception')
                 ], 'json'),
                 Response::HTTP_NOT_FOUND,
