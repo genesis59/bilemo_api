@@ -10,6 +10,37 @@ nelmio_api_doc:
                     tags:
                         - Reseller
                     summary: Permet de créer un Reseller.
+                    requestBody:
+                        description: Crée un nouveau Reseller
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: '#/components/schemas/ResellerBody'
+                    responses:
+                        '201':
+                            description: Reseller créé
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/Reseller'
+                        '401':
+                            description: Identifiants erronés
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/InvalidCredentials'
+                        '422':
+                            description: Format d'envoi non reconnu
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/InvalidCredentials'
+                        '405':
+                            description: Méthode non autorisée
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/MethodNotAllowed'
             /api/auth/login:
                 post:
                     operationId: postCredentialsItem
@@ -41,6 +72,12 @@ nelmio_api_doc:
                                 application/json:
                                     schema:
                                         $ref: '#/components/schemas/BadRequest'
+                        '405':
+                            description: Méthode non autorisée
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/MethodNotAllowed'
             /api/token/refresh:
                 post:
                     tags:
@@ -65,7 +102,12 @@ nelmio_api_doc:
                                 application/json:
                                     schema:
                                         $ref: '#/components/schemas/InvalidCredentials'
-
+                        '405':
+                            description: Méthode non autorisée
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/MethodNotAllowed'
         components:
             schemas:
                 Token:
@@ -77,6 +119,36 @@ nelmio_api_doc:
                         refresh_token:
                             type: string
                             readOnly: true
+                Reseller:
+                    type: object
+                    properties:
+                        _links:
+                            type: object
+                            properties:
+                                create:
+                                    type: string
+                                    readOnly: true
+                        email:
+                            type: string
+                            readOnly: true
+                        roles:
+                            type: array
+                            items:
+                                type: string
+                                example: ROLE_USER
+                        uuid:
+                            type: string
+                            readOnly: true
+                        company:
+                            type: string
+                            readOnly: true
+                        createdAt:
+                            type: string
+                            format: date-time
+                            readOnly: true
+                        _type:
+                            type: string
+                            readOnly: true
                 Credentials:
                     type: object
                     properties:
@@ -86,6 +158,18 @@ nelmio_api_doc:
                         password:
                             type: string
                             default: password
+                ResellerBody:
+                    type: object
+                    properties:
+                        email:
+                            type: string
+                            default: admin@bilemo.com
+                        password:
+                            type: string
+                            default: password95173!!
+                        company:
+                            type: string
+                            default: myCompany
                 RefreshCredentials:
                     type: object
                     properties:
@@ -122,6 +206,18 @@ nelmio_api_doc:
                 NotFound:
                     type: object
                     properties:
+                        code:
+                            type: int
+                            readOnly: true
+                        message:
+                            type: string
+                            readOnly: true
+                MethodNotAllowed:
+                    type: object
+                    properties:
+                        code:
+                            type: int
+                            readOnly: true
                         message:
                             type: string
                             readOnly: true

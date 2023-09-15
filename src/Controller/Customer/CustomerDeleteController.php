@@ -18,12 +18,20 @@ use OpenApi\Attributes as OA;
 class CustomerDeleteController extends AbstractController
 {
     /**
-     * @throws EntityNotFoundException
      * @throws InvalidArgumentException
+     * @throws EntityNotFoundException
      */
     #[OA\Response(
         response: 204,
         description: 'Suppression réussie'
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Mauvaise requête',
+        content: new OA\JsonContent(
+            ref: '#/components/schemas/BadRequest',
+            type: 'object'
+        )
     )]
     #[OA\Response(
         response: 401,
@@ -35,9 +43,17 @@ class CustomerDeleteController extends AbstractController
     )]
     #[OA\Response(
         response: 404,
-        description: 'Ces données n\'existe pas',
+        description: 'Cette ressource n\'existe pas',
         content: new OA\JsonContent(
             ref: '#/components/schemas/NotFound',
+            type: 'object'
+        )
+    )]
+    #[OA\Response(
+        response: 405,
+        description: 'Méthode non autorisée',
+        content: new OA\JsonContent(
+            ref: '#/components/schemas/MethodNotAllowed',
             type: 'object'
         )
     )]
@@ -48,12 +64,12 @@ class CustomerDeleteController extends AbstractController
         TagAwareCacheInterface $cache
     ): JsonResponse {
         if (!Uuid::isValid($uuid)) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException("", Response::HTTP_NOT_FOUND);
         }
         /** @var Customer $customer */
         $customer = $customerRepository->findOneBy(['uuid' => $uuid,'reseller' => $this->getUser()]);
         if ($customer == null) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException("", Response::HTTP_NOT_FOUND);
         }
         $cache->delete(sprintf("customer-%s", $uuid));
         $cache->invalidateTags(['customersCache']);
