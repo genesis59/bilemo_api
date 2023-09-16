@@ -1,4 +1,4 @@
-# bilemo_api [![Codacy Badge](https://app.codacy.com/project/badge/Grade/031726461c12457dbfab0c0a13228764)](https://www.codacy.com/gh/genesis59/snowtricks_com/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=genesis59/snowtricks_com&amp;utm_campaign=Badge_Grade)
+# bilemo_api [![Codacy Badge](https://app.codacy.com/project/badge/Grade/fb96a88f33d3469d82ea056e0dfe9b87)](https://app.codacy.com/gh/genesis59/bilemo_api/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 ## Environnement de développement
 ### Prérequis
 * git https://git-scm.com/downloads
