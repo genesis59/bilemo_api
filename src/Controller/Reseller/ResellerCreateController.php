@@ -27,8 +27,7 @@ class ResellerCreateController extends AbstractController
         SerializerInterface $serializer,
         ResellerRepository $resellerRepository,
         ValidatorInterface $validator,
-        TranslatorInterface $translator,
-        #[MapRequestPayload] ResellerDto $resellerDto
+        TranslatorInterface $translator
     ): JsonResponse {
 
         if ($request->getContent() === "") {
