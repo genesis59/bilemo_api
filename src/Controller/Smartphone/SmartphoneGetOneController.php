@@ -139,8 +139,7 @@ class SmartphoneGetOneController extends AbstractController
         SmartphoneRepository $smartphoneRepository,
         string $uuid,
         TagAwareCacheInterface $cache,
-        SerializerInterface $serializer,
-        ApiTransformer $smartphoneVersionManager
+        SerializerInterface $serializer
     ): JsonResponse {
 
         if (!Uuid::isValid($uuid)) {

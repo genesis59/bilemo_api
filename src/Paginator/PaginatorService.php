@@ -7,6 +7,7 @@ use App\Repository\SmartphoneRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -64,7 +65,8 @@ class PaginatorService
             !method_exists($repository, "searchAndPaginate")
         ) {
             throw new BadMethodCallException(
-                $this->translator->trans('app.exception.bad_method_call_exception_searchAndPaginate')
+                $this->translator->trans('app.exception.bad_method_call_exception_searchAndPaginate'),
+                Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
         $this->data = $repository->searchAndPaginate(

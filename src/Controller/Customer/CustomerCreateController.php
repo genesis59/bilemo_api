@@ -183,8 +183,7 @@ class CustomerCreateController extends AbstractController
         CustomerRepository $customerRepository,
         ValidatorInterface $validator,
         TranslatorInterface $translator,
-        TagAwareCacheInterface $cache,
-        #[MapRequestPayload] CustomerDto $customerDto
+        TagAwareCacheInterface $cache
     ): JsonResponse {
         /** @var Customer $customer */
         $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json', [
@@ -207,9 +206,7 @@ class CustomerCreateController extends AbstractController
             );
         }
         $customerRepository->save($customer, true);
-
         $key = sprintf("customer-%s", $customer->getUuid());
-
         $cache->invalidateTags(['customersCache']);
         $dataJson = $cache->get(
             $key,

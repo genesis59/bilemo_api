@@ -60,9 +60,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 return;
             }
         }
-
         $exception = $event->getThrowable();
-
         if ($exception instanceof HttpException) {
             $message = $exception->getMessage();
             if (
@@ -87,7 +85,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 true
             ));
         }
-
         if ($exception instanceof NotEncodableValueException) {
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([
@@ -98,13 +95,11 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 true
             ));
         }
-
         if ($exception instanceof NotNullConstraintViolationException) {
             $fieldList = explode(",", explode(")", explode("(", $exception->getQuery()->getSQL())[1])[0]);
             foreach ($fieldList as $key => $field) {
                 $fieldList[$key] = trim($field);
             }
-
             $messages = [];
             foreach ($exception->getQuery()->getParams() as $key => $value) {
                 if (getType($value) === "NULL") {
@@ -116,7 +111,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
                     );
                 }
             }
-
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize($messages, 'json'),
                 Response::HTTP_BAD_REQUEST,
@@ -124,7 +118,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 true
             ));
         }
-
         if ($exception instanceof MethodNotAllowedHttpException) {
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([
@@ -140,7 +133,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 true
             ));
         }
-
         if ($exception instanceof UnexpectedValueException) {
             $message = $this->translator->trans('app.exception.unexpected_value_exception');
             $event->setResponse(new JsonResponse(
@@ -169,7 +161,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 true
             ));
         }
-
         /** The request hasn't been validated by the validator */
         if ($exception instanceof UnprocessableEntityHttpException) {
             $event->setResponse(new JsonResponse(
@@ -179,7 +170,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 true
             ));
         }
-
         /** The request doesn't have the expected content */
         if ($exception instanceof BadRequestHttpException) {
             $message = $exception->getMessage();
@@ -207,12 +197,12 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 true
             ));
         }
-
         if ($exception instanceof BadMethodCallException) {
             $message = $exception->getMessage();
             $event->setResponse(new JsonResponse(
                 $this->serializer->serialize([
-                'message' => $message
+                    'code' => $exception->getCode(),
+                    'message' => $message
                 ], 'json'),
                 Response::HTTP_INTERNAL_SERVER_ERROR,
                 [],
@@ -235,7 +225,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 true
             ));
         }
-
         /** Entity doesn't exist */
         if ($exception instanceof EntityNotFoundException) {
             $event->setResponse(new JsonResponse(
@@ -248,17 +237,17 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 true
             ));
         }
-
         /** untreated exception  */
-//        if (!$event->getResponse()) {
-//            $event->setResponse(new JsonResponse(
-//                $this->serializer->serialize([
-//                    'message' => $this->translator->trans('app.exception.internal_server_error')
-//                ], 'json'),
-//                Response::HTTP_INTERNAL_SERVER_ERROR,
-//                [],
-//                true
-//            ));
-//        }
+        if (!$event->getResponse()) {
+            $event->setResponse(new JsonResponse(
+                $this->serializer->serialize([
+                    'code' => $exception->getCode(),
+                    'message' => $this->translator->trans('app.exception.internal_server_error')
+                ], 'json'),
+                Response::HTTP_INTERNAL_SERVER_ERROR,
+                [],
+                true
+            ));
+        }
     }
 }
