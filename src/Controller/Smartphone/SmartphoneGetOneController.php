@@ -102,14 +102,6 @@ class SmartphoneGetOneController extends AbstractController
         )
     )]
     #[OA\Response(
-        response: 400,
-        description: 'Mauvaise requête',
-        content: new OA\JsonContent(
-            ref: '#/components/schemas/BadRequest',
-            type: 'object'
-        )
-    )]
-    #[OA\Response(
         response: 401,
         description: 'Identifiants erronés',
         content: new OA\JsonContent(

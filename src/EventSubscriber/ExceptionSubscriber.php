@@ -14,7 +14,6 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Serializer\Exception\PartialDenormalizationException;
@@ -61,6 +60,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
             }
         }
         $exception = $event->getThrowable();
+
         if ($exception instanceof HttpException) {
             $message = $exception->getMessage();
             if (
