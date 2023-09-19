@@ -140,14 +140,6 @@ class CustomerCreateController extends AbstractController
         )
     )]
     #[OA\Response(
-        response: 400,
-        description: 'Mauvaise requête',
-        content: new OA\JsonContent(
-            ref: '#/components/schemas/BadRequest',
-            type: 'object'
-        )
-    )]
-    #[OA\Response(
         response: 401,
         description: 'Identifiants erronés',
         content: new OA\JsonContent(
@@ -183,7 +175,8 @@ class CustomerCreateController extends AbstractController
         CustomerRepository $customerRepository,
         ValidatorInterface $validator,
         TranslatorInterface $translator,
-        TagAwareCacheInterface $cache
+        TagAwareCacheInterface $cache,
+        #[MapRequestPayload] CustomerDto $customerDto
     ): JsonResponse {
         /** @var Customer $customer */
         $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json', [
